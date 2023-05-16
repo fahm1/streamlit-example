@@ -1,3 +1,4 @@
+import time
 import calendar
 import numpy as np
 import pandas as pd
@@ -533,8 +534,13 @@ with st.spinner("Loading..."):
 
 progress_bar.progress(100, text=progress_text)
 
-st.success("Done!")
+success_message = st.success("Done!", icon="✅")
 st.balloons()
+
+time.sleep(3)
+progress_bar.empty()
+success_message.empty()
+
 
 # import requests
 # import streamlit as st
