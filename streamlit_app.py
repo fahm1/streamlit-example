@@ -24,7 +24,12 @@ In the meantime, below is an example of what you can do with just a few lines of
 
 
 st.subheader("Input CSV below")
-uploaded_file = st.file_uploader(label="", label_visibility="collapsed")
+
+uploaded_file = None
+
+while not uploaded_file:
+    uploaded_file = st.file_uploader(label="", label_visibility="collapsed")
+    st.info("☝️ Upload a CSV file")
 
 # if uploaded_file:
 #     df = pd.read_csv(uploaded_file)
@@ -35,11 +40,9 @@ uploaded_file = st.file_uploader(label="", label_visibility="collapsed")
 # else:
 #     st.info("☝️ Upload a CSV file")
 
-if not uploaded_file:
-    st.info("☝️ Upload a CSV file")
 
 df = pd.read_csv(uploaded_file)
 st.subheader("Dataframe")
 st.write(df.head(3))
-st.subheader("D")
+st.subheader("basic df info")
 st.write(df.describe())
