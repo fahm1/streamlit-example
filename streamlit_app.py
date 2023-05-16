@@ -439,7 +439,7 @@ with st.expander("Ticket count by client"):
     sns.despine(bottom=True, left=True)
 
     # plt.savefig('count_client_tickets.png', dpi=300, bbox_inches='tight')
-    plt.show()
+    st.pyplot(fig=fig)
 
 
 df8 = df.query("ticket_status == 'Closed'")
@@ -500,4 +500,4 @@ with st.expander("Average days to close by product"):
     sns.despine(bottom=True, left=True)
 
     # plt.savefig('average_days_by_product.png', dpi=300, bbox_inches='tight')
-    plt.show()
+    st.pyplot(fig=fig)
