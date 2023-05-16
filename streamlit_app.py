@@ -29,7 +29,8 @@ uploaded_file = st.file_uploader(label="hidden label", label_visibility="collaps
 st.info("☝️ Upload a CSV file")
 
 if not uploaded_file:
-    st.stop("Please upload a .csv file")
+    st.warning("Please upload a .csv file")
+    st.stop()
 
 st.success("The .csv file has been successfully uploaded!", icon="✅")
 
