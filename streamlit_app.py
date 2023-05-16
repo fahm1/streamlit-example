@@ -21,7 +21,7 @@ In the meantime, below is an example of what you can do with just a few lines of
 """
 
 
-st.set_page(layout="wide")
+st.set_page_config(layout="wide")
 
 st.subheader("Input CSV below")
 uploaded_file = st.file_uploader(label_visibility="collapsed")
