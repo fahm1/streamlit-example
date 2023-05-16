@@ -47,7 +47,7 @@ st.success(
 #     st.info("☝️ Upload a CSV file")
 
 
-@st.cache(suppress_st_warning=True)
+@st.cache_data()
 def load_data(file):
     return pd.read_csv(file)
 
