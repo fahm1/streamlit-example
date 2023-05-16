@@ -6,7 +6,16 @@ import matplotlib.cm as cm
 import seaborn as sns
 import streamlit as st
 
-st.set_page_config(layout="wide")
+# st.set_page_config(layout="wide")
+st.set_page_config(
+    page_title="Enstoa COE KPI Report",
+    page_icon="🏫",
+    layout="centered",
+    menu_items={
+        "Get help": "mailto:fislam@enstoa.com",
+        "About": "A page to display key metrics regarding COE and tickets pulled from Zendesk",
+    },
+)
 
 """
 # Enstoa COE KPI Report
