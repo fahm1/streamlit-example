@@ -44,6 +44,9 @@ st.success(
     icon="✅",
 )
 
+progress_text = "Loading..."
+progress_bar = st.progress(0, progress_text)
+
 with st.spinner("Loading..."):
     tab1, tab2, tab3, tab4, tab5 = st.tabs(
         [
@@ -220,6 +223,8 @@ with st.spinner("Loading..."):
         # plt.savefig('tickets_per_month.png', dpi=300, bbox_inches='tight')
         st.pyplot(fig=fig)
 
+    progress_bar.progress(20, text=progress_text)
+
     df3 = (
         df.query("ticket_status == 'Closed' and year_opened >= 2019")
         .groupby(by=["year_opened", "month_opened"])
@@ -323,6 +328,8 @@ with st.spinner("Loading..."):
         # plt.savefig('average_days_to_close.png', dpi=300, bbox_inches='tight')
         st.pyplot(fig=fig)
 
+    progress_bar.progress(40, text=progress_text)
+
     products_of_interest = [
         "Oracle Primavera Unifier",
         "Adapters",
@@ -393,6 +400,8 @@ with st.spinner("Loading..."):
         # plt.savefig('count_product_tickets.png', dpi=300, bbox_inches='tight')
         st.pyplot(fig=fig)
 
+    progress_bar.progress(60, text=progress_text)
+
     df6 = df.copy()
     df6.loc[
         df6.client_name == "The Red Sea Development Co., (TRSDC)", "client_name"
@@ -458,6 +467,8 @@ with st.spinner("Loading..."):
         # plt.savefig('count_client_tickets.png', dpi=300, bbox_inches='tight')
         st.pyplot(fig=fig)
 
+    progress_bar.progress(80, text=progress_text)
+
     df8 = df.query("ticket_status == 'Closed'")
     df8 = (
         df8.groupby(by=["year_opened", "month_opened", "product_type"])
@@ -518,6 +529,9 @@ with st.spinner("Loading..."):
 
         # plt.savefig('average_days_by_product.png', dpi=300, bbox_inches='tight')
         st.pyplot(fig=fig)
+
+
+progress_bar.progress(100, text=progress_text)
 
 st.success("Done!")
 st.balloons()
