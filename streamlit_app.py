@@ -47,7 +47,13 @@ st.success(
 #     st.info("☝️ Upload a CSV file")
 
 
-df = pd.read_csv(uploaded_file)
+@st.cache(suppress_st_warning=True)
+def load_data(file):
+    return pd.read_csv(file)
+
+
+df = load_data(uploaded_file)
+
 # st.subheader("Dataframe")
 # st.write(df.head(3))
 # st.subheader("basic df info")
@@ -110,4 +116,7 @@ df_monthly_grouped = (
     .reset_index(name="ticket_count")
     .astype({"month_opened": "int32"})
 )
-st.write(df_monthly_grouped.head(20))
+
+custom_palette = sns.color_palette(
+    ["#264653", "#2A9D8F", "#E9C46A", "#F4A261", "#E76F51", "#E97C61"]
+)
