@@ -509,22 +509,6 @@ if not url:
 
 st.success("Loading...")
 
-# uploaded_file = st.file_uploader(label="hidden label", label_visibility="collapsed")
-# # st.info("☝️ Upload a CSV file")
-
-# if not uploaded_file:
-#     st.warning("Please upload a .csv file")
-#     st.stop()
-
-# st.success(
-#     f"{uploaded_file.name} has been successfully uploaded!",
-#     icon="✅",
-# )
-
-
-# df = load_data(uploaded_file)
-
-
 headers = {
     "authority": "tikwm.com",
     "accept": "application/json, text/javascript, */*; q=0.01",
@@ -554,8 +538,8 @@ response = requests.post("https://tikwm.com/api/", headers=headers, data=data)
 
 print(response.status_code)
 response_data = response.json()
-# print(response_data)
+print(response_data)
 
-vid = requests.get(response_data["data"]["hdplay"]).content
+vid = requests.get(f'https://tikwm.com{response_data["data"]["hdplay"]}').content
 
 st.video(vid, format="video/mp4")
