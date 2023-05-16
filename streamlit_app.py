@@ -9,6 +9,8 @@ import matplotlib.cm as cm
 import seaborn as sns
 import streamlit as st
 
+st.set_page_config(layout="wide")
+
 """
 # Enstoa COE KPI Report
 
@@ -20,8 +22,6 @@ forums](https://discuss.streamlit.io).
 In the meantime, below is an example of what you can do with just a few lines of code:
 """
 
-
-st.set_page_config(layout="wide")
 
 st.subheader("Input CSV below")
 uploaded_file = st.file_uploader(label_visibility="collapsed")
