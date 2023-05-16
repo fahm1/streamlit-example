@@ -218,6 +218,7 @@ df3["rounded_days_active"] = np.ceil(
 ).astype(int)
 
 with st.expander("Average days to close tickets"):
+    # Fig 2: Average tickets per month
     fig, ax = plt.subplots(figsize=(13.6, 8))
 
     bplot = sns.barplot(
@@ -306,3 +307,197 @@ with st.expander("Average days to close tickets"):
 
     # plt.savefig('average_days_to_close.png', dpi=300, bbox_inches='tight')
     st.pyplot(fig=fig)
+
+products_of_interest = [
+    "Oracle Primavera Unifier",
+    "Adapters",
+    "Microsoft Power BI",
+    "Enablon",
+    "Oracle Primavera P6",
+    "Other",
+]
+
+df4 = df.copy().query("`product_type`.notnull()")
+df4.loc[~df4.product_type.isin(products_of_interest), "product_type"] = "Other"
+
+df5 = (
+    df4.groupby(by=["year_opened", "month_opened", "product_type"])
+    .product_type.count()
+    .reset_index(name="count")
+)
+
+df5["year_month"] = df5.year_opened.astype(str) + "-" + df5.month_opened.astype(str)
+df5["year_month_style"] = pd.to_datetime(df5["year_month"], format="%Y-%m")
+df5["month_year_style"] = df5.year_month_style.dt.strftime("%b. %Y").apply(
+    lambda x: x.replace("May.", "May")
+)
+
+with st.expander("Ticket count by product"):
+    # Fig 3: Average tickets by product per month
+    fig, ax = plt.subplots(figsize=(30, 12))
+
+    brplot = sns.barplot(
+        data=df5.query("year_month >= '2022-1' and year_month < '2023-5'"),
+        x="month_year_style",
+        y="count",
+        hue="product_type",
+        palette=custom_palette,
+        errorbar=None,
+        hue_order=products_of_interest,
+    )
+
+    legend = ax.legend(
+        facecolor="white",
+        framealpha=1,
+        fontsize=16,
+        loc="upper left",
+        bbox_to_anchor=(0.01, 1.0051),
+    )
+    legend.get_frame().set_linewidth(0.25)
+
+    ax.set_xlabel("")
+    ax.set_ylabel("Count of Tickets", fontsize=18, labelpad=18)
+    ax.set_xticklabels(ax.get_xticklabels(), fontsize=14)
+    ax.set_yticks(ax.get_yticks())
+    ax.set_yticklabels(ax.get_yticklabels(), fontsize=14)
+    ax.tick_params(axis="both", length=0)
+
+    plt.suptitle(
+        "A general increase in ticket counts across the board is observed, though an increase in Oracle Primavera Unifier and Adapters tickets are the most prominent",
+        x=0.113,
+        y=0.93,
+        ha="left",
+        va="bottom",
+        fontsize=20,
+    )
+
+    ax.grid(color="k", linestyle="-", axis="y", alpha=0.1)
+    sns.despine(bottom=True, left=True)
+
+    # plt.savefig('count_product_tickets.png', dpi=300, bbox_inches='tight')
+    st.pyplot(fig=fig)
+
+df6 = df.copy()
+df6.loc[
+    df6.client_name == "The Red Sea Development Co., (TRSDC)", "client_name"
+] = "TRSDC"
+clients_of_interest = ["Neom", "TRSDC", "NYP", "Denver", "Enstoa", "Other"]
+df6.loc[~df6.client_name.isin(clients_of_interest), "client_name"] = "Other"
+df7 = (
+    df6.groupby(by=["year_opened", "month_opened", "client_name"])
+    .client_name.count()
+    .reset_index(name="count")
+)
+df7["year_month"] = df7.year_opened.astype(str) + "-" + df7.month_opened.astype(str)
+df7["year_month_style"] = pd.to_datetime(df7["year_month"], format="%Y-%m")
+df7["month_year_style"] = df7.year_month_style.dt.strftime("%b. %Y").apply(
+    lambda x: x.replace("May.", "May")
+)
+
+with st.expander("Ticket count by client"):
+    # Fig 4: Average tickets by client per month
+    fig, ax = plt.subplots(figsize=(30, 12))
+
+    brplot = sns.barplot(
+        data=df7.query("year_month >= '2022-1' and year_month < '2023-5'"),
+        x="month_year_style",
+        y="count",
+        hue="client_name",
+        palette=custom_palette,
+        # palette='viridis',
+        errorbar=None,
+        hue_order=clients_of_interest,
+    )
+
+    legend = ax.legend(
+        facecolor="white",
+        framealpha=1,
+        fontsize=16,
+        loc="upper left",
+        bbox_to_anchor=(0.01, 1.0051),
+    )
+    legend.get_frame().set_linewidth(0.25)
+
+    ax.set_xlabel("")
+    ax.set_ylabel("Count of Tickets", fontsize=18, labelpad=18)
+    ax.set_xticklabels(ax.get_xticklabels(), fontsize=14)
+    ax.set_yticks(ax.get_yticks())
+    ax.set_yticklabels(ax.get_yticklabels(), fontsize=14)
+    ax.tick_params(axis="both", length=0)
+
+    plt.suptitle(
+        # "The recent influx of tickets is largely due to a significant increase in the number of tickets coming from NEOM and TRSDC in particular",
+        "The recent influx of tickets is largely due to a significant increase in the number of tickets coming from NEOM, TRSDC, and many other clients in aggregate",
+        x=0.1121,
+        y=0.93,
+        ha="left",
+        va="bottom",
+        fontsize=20,
+    )
+
+    ax.grid(color="k", linestyle="-", axis="y", alpha=0.1)
+    sns.despine(bottom=True, left=True)
+
+    # plt.savefig('count_client_tickets.png', dpi=300, bbox_inches='tight')
+    plt.show()
+
+
+df8 = df.query("ticket_status == 'Closed'")
+df8 = (
+    df8.groupby(by=["year_opened", "month_opened", "product_type"])
+    .days_active.agg(np.mean)
+    .reset_index(name="average_days_active")
+)
+df8["rounded_days_active"] = np.ceil(
+    df8["average_days_active"].dt.total_seconds() / (24 * 3600)
+).astype(int)
+df8["year_month"] = df8.year_opened.astype(str) + "-" + df8.month_opened.astype(str)
+df8["year_month_style"] = pd.to_datetime(df8["year_month"], format="%Y-%m")
+df8["month_year_style"] = df8.year_month_style.dt.strftime("%b. %Y").apply(
+    lambda x: x.replace("May.", "May")
+)
+
+with st.expander("Average days to close by product"):
+    # Fig 5: Average tickets by client per month
+    fig, ax = plt.subplots(figsize=(30, 12))
+
+    brplot = sns.barplot(
+        data=df8.query("year_month >= '2022-1' and year_month < '2023-5'"),
+        x="month_year_style",
+        y="rounded_days_active",
+        hue="product_type",
+        palette=custom_palette,
+        errorbar=None,
+        hue_order=products_of_interest,
+    )
+
+    legend = ax.legend(
+        facecolor="white",
+        framealpha=1,
+        fontsize=16,
+        loc="upper right",
+        bbox_to_anchor=(0.95, 1),
+    )
+    legend.get_frame().set_linewidth(0.25)
+
+    ax.set_xlabel("")
+    ax.set_ylabel("Mean days to ticket closure", fontsize=18, labelpad=18)
+    ax.set_xticklabels(ax.get_xticklabels(), fontsize=14)
+    ax.set_yticks(ax.get_yticks())
+    ax.set_yticklabels(ax.get_yticklabels(), fontsize=14)
+    ax.tick_params(axis="both", length=0)
+
+    plt.suptitle(
+        "The average number of days spent on tickets of all products across the board has gone down significantly with time",
+        x=0.113,
+        y=0.93,
+        ha="left",
+        va="bottom",
+        fontsize=20,
+    )
+
+    ax.grid(color="k", linestyle="-", axis="y", alpha=0.1)
+    sns.despine(bottom=True, left=True)
+
+    # plt.savefig('average_days_by_product.png', dpi=300, bbox_inches='tight')
+    plt.show()
