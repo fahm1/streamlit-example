@@ -24,7 +24,7 @@ In the meantime, below is an example of what you can do with just a few lines of
 
 
 st.subheader("Input CSV below")
-uploaded_file = st.file_uploader(label_visibility="collapsed")
+uploaded_file = st.file_uploader(label="", label_visibility="collapsed")
 
 # if uploaded_file:
 #     df = pd.read_csv(uploaded_file)
