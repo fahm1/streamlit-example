@@ -45,6 +45,16 @@ st.success(
 )
 
 with st.spinner("Loading..."):
+    tab1, tab2, tab3, tab4, tab5 = st.tabs(
+        [
+            "Tickets per Month",
+            "Average Days to Close Tickets",
+            "Average Ticket Count by Product",
+            "Average Ticket Count by Client",
+            "Average Days to Close Tickets by Product",
+        ]
+    )
+
     df = load_data(uploaded_file)
 
     # st.subheader("Dataframe")
@@ -115,7 +125,8 @@ with st.spinner("Loading..."):
         ["#264653", "#2A9D8F", "#E9C46A", "#F4A261", "#E76F51", "#E97C61"]
     )
 
-    with st.expander("Tickets Per Month"):
+    # with st.expander("Tickets Per Month"):
+    with tab1:
         # Fig 1: Tickets per month
         fig, ax = plt.subplots(figsize=(13.6, 8))
 
@@ -220,7 +231,8 @@ with st.spinner("Loading..."):
         df3["average_days_active"].dt.total_seconds() / (24 * 3600)
     ).astype(int)
 
-    with st.expander("Average days to close tickets"):
+    # with st.expander("Average days to close tickets"):
+    with tab2:
         # Fig 2: Average tickets per month
         fig, ax = plt.subplots(figsize=(13.6, 8))
 
@@ -335,7 +347,8 @@ with st.spinner("Loading..."):
         lambda x: x.replace("May.", "May")
     )
 
-    with st.expander("Ticket count by product"):
+    # with st.expander("Ticket count by product"):
+    with tab3:
         # Fig 3: Average tickets by product per month
         fig, ax = plt.subplots(figsize=(30, 12))
 
@@ -397,7 +410,8 @@ with st.spinner("Loading..."):
         lambda x: x.replace("May.", "May")
     )
 
-    with st.expander("Ticket count by client"):
+    # with st.expander("Ticket count by client"):
+    with tab4:
         # Fig 4: Average tickets by client per month
         fig, ax = plt.subplots(figsize=(30, 12))
 
@@ -459,7 +473,8 @@ with st.spinner("Loading..."):
         lambda x: x.replace("May.", "May")
     )
 
-    with st.expander("Average days to close by product"):
+    # with st.expander("Average days to close by product"):
+    with tab5:
         # Fig 5: Average tickets by client per month
         fig, ax = plt.subplots(figsize=(30, 12))
 
@@ -505,7 +520,7 @@ with st.spinner("Loading..."):
         st.pyplot(fig=fig)
 
 st.success("Done!")
-st.snow()
+st.balloons()
 
 # import requests
 # import streamlit as st
