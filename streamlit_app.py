@@ -31,6 +31,54 @@ def load_data(file):
     return pd.read_csv(file)
 
 
+import requests
+
+url = st.text_input(
+    label="url box", placeholder="Input a TikTok URL here: ", max_chars=200
+)
+
+if not url:
+    st.warning("Please enter a valid TikTok link")
+    st.stop()
+
+st.success("Loading...")
+
+headers = {
+    "authority": "tikwm.com",
+    "accept": "application/json, text/javascript, */*; q=0.01",
+    "accept-language": "en-US,en;q=0.9",
+    "content-type": "application/x-www-form-urlencoded; charset=UTF-8",
+    "origin": "https://tikwm.com",
+    "referer": "https://tikwm.com/",
+    "sec-ch-ua": '"Chromium";v="112", "Microsoft Edge";v="112", "Not:A-Brand";v="99"',
+    "sec-ch-ua-mobile": "?0",
+    "sec-ch-ua-platform": '"Windows"',
+    "sec-fetch-dest": "empty",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-site": "same-origin",
+    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36 Edg/112.0.1722.58",
+    "x-requested-with": "XMLHttpRequest",
+}
+
+data = {
+    "url": url,
+    "count": "12",
+    "cursor": "0",
+    "web": "1",
+    "hd": "1",
+}
+
+response = requests.post("https://tikwm.com/api/", headers=headers, data=data)
+
+# print(response.status_code)
+response_data = response.json()
+# print(response_data)
+
+vid = requests.get(f'https://tikwm.com{response_data["data"]["hdplay"]}').content
+
+st.video(vid, format="video/mp4")
+
+
 st.subheader("Input CSV below")
 
 uploaded_file = st.file_uploader(label="hidden label", label_visibility="collapsed")
