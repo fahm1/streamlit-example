@@ -505,7 +505,7 @@ with st.spinner("Loading..."):
         st.pyplot(fig=fig)
 
 st.success("Done!")
-
+st.snow()
 
 # import requests
 # import streamlit as st
