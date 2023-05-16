@@ -25,11 +25,13 @@ In the meantime, below is an example of what you can do with just a few lines of
 
 st.subheader("Input CSV below")
 
-uploaded_file = None
+uploaded_file = st.file_uploader(label="hidden label", label_visibility="collapsed")
+st.info("☝️ Upload a CSV file")
 
-while not uploaded_file:
-    uploaded_file = st.file_uploader(label="", label_visibility="collapsed")
-    st.info("☝️ Upload a CSV file")
+if not uploaded_file:
+    st.stop("Please upload a .csv file")
+
+st.success("The .csv file has been successfully uploaded!", icon="✅")
 
 # if uploaded_file:
 #     df = pd.read_csv(uploaded_file)
