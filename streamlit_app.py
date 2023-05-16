@@ -163,7 +163,7 @@ ax2.set_ylim(0, ax.get_ylim()[1])
 handles, labels = ax2.get_legend_handles_labels()
 handles = handles[::-1]
 labels = labels[::-1]
-ax2.legend(
+legend = ax2.legend(
     handles,
     labels,
     # loc="best",
