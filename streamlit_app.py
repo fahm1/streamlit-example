@@ -283,95 +283,151 @@ df3["rounded_days_active"] = np.ceil(
 
 # with st.expander("Average days to close tickets"):
 with tab2:
-    # Fig 2: Average tickets per month
-    fig, ax = plt.subplots(figsize=(13.6, 8))
+    col1, col2 = st.columns([0.8, 0.2], gap="small")
 
-    bplot = sns.barplot(
-        data=df3,
-        x="month_opened",
-        y="rounded_days_active",
-        hue="year_opened",
-        palette=custom_palette,
-        ax=ax,
-        errorbar=None,
-        alpha=0.15,
-    )
+    with col1:
+        # Fig 2: Average tickets per month
+        fig, ax = plt.subplots(figsize=(13.6, 8))
 
-    ax.set_xlim(-0.5, 11.5)
-    ax.set_ylim(0, ax.get_ylim()[1])
+        bplot = sns.barplot(
+            data=df3,
+            x="month_opened",
+            y="rounded_days_active",
+            hue="year_opened",
+            palette=custom_palette,
+            ax=ax,
+            errorbar=None,
+            alpha=0.15,
+        )
 
-    ax.legend_.remove()
+        ax.set_xlim(-0.5, 11.5)
+        ax.set_ylim(0, ax.get_ylim()[1])
 
-    ax.set_xticklabels([calendar.month_name[i] for i in range(1, 13)])
-    # ax.set_xlabel("Month of Year", fontsize=14, labelpad=12)
-    ax.set_xlabel("")
-    ax.set_ylabel("Mean Days to Ticket Closure", fontsize=12, labelpad=15)
-    ax.tick_params(axis="both", length=0)
-    ax.tick_params(axis="y", pad=28)
+        ax.legend_.remove()
 
-    ax2 = fig.add_axes([0.1, 0.11, 0.76, 0.77])  # left, bottom, width, height
-    ax2.patch.set_alpha(0)
+        ax.set_xticklabels([calendar.month_name[i] for i in range(1, 13)])
+        # ax.set_xlabel("Month of Year", fontsize=14, labelpad=12)
+        ax.set_xlabel("")
+        ax.set_ylabel("Mean Days to Ticket Closure", fontsize=12, labelpad=15)
+        ax.tick_params(axis="both", length=0)
+        ax.tick_params(axis="y", pad=28)
 
-    lplot = sns.lineplot(
-        data=df3,
-        x="month_opened",
-        y="rounded_days_active",
-        hue="year_opened",
-        palette=custom_palette[:5],
-        ax=ax2,
-        errorbar=None,
-        alpha=1,
-        legend=True,
-    )
+        ax2 = fig.add_axes([0.1, 0.11, 0.76, 0.77])  # left, bottom, width, height
+        ax2.patch.set_alpha(0)
 
-    ax2.set_xlim(0.125, 12)
-    ax2.set_ylim(0, ax.get_ylim()[1])
+        lplot = sns.lineplot(
+            data=df3,
+            x="month_opened",
+            y="rounded_days_active",
+            hue="year_opened",
+            palette=custom_palette[:5],
+            ax=ax2,
+            errorbar=None,
+            alpha=1,
+            legend=True,
+        )
 
-    handles, labels = ax2.get_legend_handles_labels()
-    handles = handles[::-1]
-    labels = labels[::-1]
-    ax2.legend(
-        handles,
-        labels,
-        # loc="best",
-        facecolor="white",
-        framealpha=1,
-        bbox_to_anchor=(0.9, 0.648),
-    )
-    legend.get_title().set_fontsize(12)
-    legend.get_frame().set_linewidth(0.25)
+        ax2.set_xlim(0.125, 12)
+        ax2.set_ylim(0, ax.get_ylim()[1])
 
-    ax2.set_xticklabels([])
-    ax2.set_yticklabels([])
-    ax2.set_xlabel("")
-    ax2.set_ylabel("")
-    ax2.tick_params(axis="both", length=0)
+        handles, labels = ax2.get_legend_handles_labels()
+        handles = handles[::-1]
+        labels = labels[::-1]
+        ax2.legend(
+            handles,
+            labels,
+            # loc="best",
+            facecolor="white",
+            framealpha=1,
+            bbox_to_anchor=(0.9, 0.648),
+        )
+        legend.get_title().set_fontsize(12)
+        legend.get_frame().set_linewidth(0.25)
 
-    ax2.axvline(x=4.55, linestyle="--", color="red", ymin=0, ymax=0.95)
+        ax2.set_xticklabels([])
+        ax2.set_yticklabels([])
+        ax2.set_xlabel("")
+        ax2.set_ylabel("")
+        ax2.tick_params(axis="both", length=0)
 
-    ax2.text(
-        1.93,
-        plt.ylim()[1] * 0.865,
-        "End of full month data for 2023",
-        color="r",
-        ha="left",
-        rotation=0,
-    )
-    ax2.grid(color="k", linestyle="-", axis="y", alpha=0.1)
+        ax2.axvline(x=5.55, linestyle="--", color="red", ymin=0, ymax=0.95)
 
-    plt.suptitle(
-        "The average number of days to close a ticket has been on a general decline since mid-2022",
-        fontsize=14,
-        ha="left",
-        va="top",
-        x=0.1,
-        y=0.9,
-    )
+        # ax2.text(
+        #     1.93,
+        #     plt.ylim()[1] * 0.865,
+        #     "End of full month data for 2023",
+        #     color="r",
+        #     ha="left",
+        #     rotation=0,
+        # )
+        ax2.grid(color="k", linestyle="-", axis="y", alpha=0.1)
 
-    sns.despine(bottom=True, left=True)
+        plt.suptitle(
+            "Average Number of Days to Close Tickets per Month 2019 - 2023",
+            fontsize=14,
+            ha="left",
+            va="top",
+            x=0.1,
+            y=0.9,
+        )
 
-    # plt.savefig('average_days_to_close.png', dpi=300, bbox_inches='tight')
-    st.pyplot(fig=fig)
+        sns.despine(bottom=True, left=True)
+
+        # plt.savefig('average_days_to_close.png', dpi=300, bbox_inches='tight')
+        st.pyplot(fig=fig)
+
+    with col2:
+        avg_days_value = df3.query(
+            "`year_opened` == 2023 and `month_opened` == 5"
+        ).rounded_days_active.squeeze()
+
+        delta_month_change_metric = round(
+            (
+                (
+                    df3.query(
+                        "`year_opened` == 2023 and `month_opened` == 5"
+                    ).rounded_days_active.squeeze()
+                    - df3.query(
+                        "`year_opened` == 2023 and `month_opened` == 4"
+                    ).rounded_days_active.squeeze()
+                )
+                / df3.query(
+                    "`year_opened` == 2023 and `month_opened` == 4"
+                ).rounded_days_active.squeeze()
+            )
+            * 100,
+            1,
+        )
+
+        delta_year_change_metric = round(
+            (
+                (
+                    df3.query(
+                        "`year_opened` == 2023 and `month_opened` == 5"
+                    ).rounded_days_active.squeeze()
+                    - df3.query(
+                        "`year_opened` == 2022 and `month_opened` == 5"
+                    ).rounded_days_active.squeeze()
+                )
+                / df3.query(
+                    "`year_opened` == 2022 and `month_opened` == 5"
+                ).rounded_days_active.squeeze()
+            )
+            * 100,
+            1,
+        )
+        st.metric(
+            label="",
+            value=avg_days_value,
+            delta=f"{delta_month_change_metric}%",
+            # delta_color="inverse",
+            help=f"The average number of days to close a ticket changed by {delta_month_change_metric}% month over month and by {delta_year_change_metric}% year over year.",
+        )
+
+        df3_styled = df3[::-1].style.format({"year_opened": "{:.0f}"})
+
+        st.dataframe(df3_styled, use_container_width=True, hide_index=True)
+
 
 progress_bar.progress(40, text=progress_text)
 
