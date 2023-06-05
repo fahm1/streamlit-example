@@ -492,7 +492,7 @@ with tab3:
         ax.tick_params(axis="both", length=0)
 
         plt.suptitle(
-            "Average Number of Tickets by Product 2022 - Present",
+            "Number of Tickets by Product per Month 2022 - Present",
             x=0.113,
             y=0.93,
             ha="left",
@@ -590,7 +590,7 @@ with tab4:
 
         plt.suptitle(
             # "The recent influx of tickets is largely due to a significant increase in the number of tickets coming from NEOM and TRSDC in particular",
-            "Number of Tickets from each Client per Month 2022 - Present",
+            "Number of Tickets by Client per Month 2022 - Present",
             x=0.1121,
             y=0.93,
             ha="left",
@@ -659,7 +659,7 @@ with tab5:
         fig, ax = plt.subplots(figsize=(30, 12))
 
         brplot = sns.barplot(
-            data=df8.query("year_month >= '2022-1' and year_month < '2023-5'"),
+            data=df8.query("year_month >= '2022-1' and year_month < '2023-6'"),
             x="month_year_style",
             y="rounded_days_active",
             hue="product_type",
@@ -685,7 +685,7 @@ with tab5:
         ax.tick_params(axis="both", length=0)
 
         plt.suptitle(
-            "Average Number of Days to Close Tickets by Month 2022 - Present",
+            "Average Number of Days to Close Tickets by Product per Month 2022 - Present",
             x=0.113,
             y=0.93,
             ha="left",
