@@ -30,7 +30,7 @@ def load_data(file):
     return pd.read_excel(file)
 
 
-st.subheader("Input CSV below")
+st.subheader("Input Excel file below")
 
 uploaded_file = st.file_uploader(label="hidden label", label_visibility="collapsed")
 # st.info("☝️ Upload a CSV file")
