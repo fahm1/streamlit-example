@@ -207,7 +207,7 @@ with tab1:
         ax2.grid(color="k", linestyle="-", axis="y", alpha=0.1)
 
         plt.suptitle(
-            "Number of Zendesk Tickets Opened by Month for 2019-2023",
+            "Number of Zendesk Tickets Opened per Month 2019 - 2023",
             fontsize=14,
             ha="left",
             va="top",
@@ -224,7 +224,8 @@ with tab1:
         value = df_monthly_grouped.query(
             "`year_opened` == 2023 and `month_opened` == 5"
         ).ticket_count.squeeze()
-        delta = round(
+
+        delta_month = round(
             (
                 df_monthly_grouped.query(
                     "`year_opened` == 2023 and `month_opened` == 4"
@@ -236,7 +237,27 @@ with tab1:
             * 100,
             1,
         )
-        st.metric(label="No. Tickets", value=value, delta=delta, delta_color="normal")
+
+        delta_year = round(
+            (
+                df_monthly_grouped.query(
+                    "`year_opened` == 2022 and `month_opened` == 5"
+                ).ticket_count.squeeze()
+                / df_monthly_grouped.query(
+                    "`year_opened` == 2023 and `month_opened` == 5"
+                ).ticket_count.squeeze()
+            )
+            * 100,
+            1,
+        )
+
+        st.metric(
+            label="No. Tickets",
+            value=value,
+            delta=f"{delta_month}% MoM",
+            delta_color="inverse",
+            help=f"The number of tickets changed by{delta_month}% month over month and by {delta_year}% year over year.",
+        )
 
 progress_bar.progress(20, text=progress_text)
 
