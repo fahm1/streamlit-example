@@ -417,14 +417,16 @@ with tab2:
             1,
         )
         st.metric(
-            label="",
+            label="Avg. Days to Close",
             value=avg_days_value,
             delta=f"{delta_month_change_metric}%",
-            # delta_color="inverse",
+            delta_color="inverse",
             help=f"The average number of days to close a ticket changed by {delta_month_change_metric}% month over month and by {delta_year_change_metric}% year over year.",
         )
 
-        df3_styled = df3[::-1].style.format({"year_opened": "{:.0f}"})
+        df3_styled = df3.drop(columns=["average_days_active"])[::-1].style.format(
+            {"year_opened": "{:.0f}"}
+        )
 
         st.dataframe(df3_styled, use_container_width=True, hide_index=True)
 
