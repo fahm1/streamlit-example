@@ -37,7 +37,7 @@ uploaded_file = st.file_uploader(label="hidden label", label_visibility="collaps
 # st.info("☝️ Upload a CSV file")
 
 if not uploaded_file:
-    st.warning("Please upload a .csv file")
+    st.warning("Please upload a .xlsx file")
     st.stop()
 
 upload_success = st.success(
@@ -731,9 +731,9 @@ with tab5:
 progress_bar.progress(100, text=progress_text)
 
 success_message = st.success("Done!", icon="✅")
-# st.balloons()
+st.balloons()
 
-time.sleep(3)
+# time.sleep(3)
 upload_success.empty()
 progress_bar.empty()
 success_message.empty()
