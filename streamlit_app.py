@@ -652,7 +652,7 @@ df8["month_year_style"] = df8.year_month_style.dt.strftime("%b. %Y").apply(
 
 # with st.expander("Average days to close by product"):
 with tab5:
-    col1, col2 = st.columns([0.75, 0.2], gap="small")
+    col1, col2 = st.columns([0.65, 0.2], gap="small")
 
     with col1:
         # Fig 5: Average tickets by client per month
