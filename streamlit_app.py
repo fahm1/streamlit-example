@@ -260,7 +260,7 @@ with tab1:
         )
 
         # could add a mini dataframe to show some of the raw data for the past few months, or all within the selected range actually
-        df_monthly_grouped_styled = df.monthly_grouped.style.format(
+        df_monthly_grouped_styled = df_monthly_grouped.style.format(
             {"year_opened": "{:.0f}"}
         )
 
