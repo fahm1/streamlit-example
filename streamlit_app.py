@@ -236,7 +236,7 @@ with tab1:
             * 100,
             1,
         )
-        st.metric(label="No. Tickets", value=value, delta=delta, color="normal")
+        st.metric(label="No. Tickets", value=value, delta=delta, delta_color="normal")
 
 progress_bar.progress(20, text=progress_text)
 
