@@ -260,8 +260,13 @@ with tab1:
         )
 
         # could add a mini dataframe to show some of the raw data for the past few months, or all within the selected range actually
+        df_monthly_grouped_styled = df.monthly_grouped.style.format(
+            {"year_opened": "{:.0f}"}
+        )
 
-        st.dataframe(df_monthly_grouped, use_container_width=True, hide_index=True)
+        st.dataframe(
+            df_monthly_grouped_styled[::-1], use_container_width=True, hide_index=True
+        )
 
 progress_bar.progress(20, text=progress_text)
 
