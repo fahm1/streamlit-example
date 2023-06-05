@@ -540,7 +540,7 @@ df6 = df.copy()
 df6.loc[
     df6.client_name == "The Red Sea Development Co., (TRSDC)", "client_name"
 ] = "TRSDC"
-clients_of_interest = ["Neom", "TRSDC", "NYP", "Denver", "Enstoa", "Other"]
+clients_of_interest = ["Neom", "NYP", "Denver", "Amaala", "TSRDC", "Other"]
 df6.loc[~df6.client_name.isin(clients_of_interest), "client_name"] = "Other"
 df7 = (
     df6.groupby(by=["year_opened", "month_opened", "client_name"])
@@ -559,7 +559,7 @@ with tab4:
     fig, ax = plt.subplots(figsize=(30, 12))
 
     brplot = sns.barplot(
-        data=df7.query("year_month >= '2022-1' and year_month < '2023-5'"),
+        data=df7.query("year_month >= '2022-1' and year_month < '2023-6'"),
         x="month_year_style",
         y="count",
         hue="client_name",
