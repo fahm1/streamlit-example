@@ -540,7 +540,7 @@ df6 = df.copy()
 df6.loc[
     df6.client_name == "The Red Sea Development Co., (TRSDC)", "client_name"
 ] = "TRSDC"
-clients_of_interest = ["Neom", "NYP", "Denver", "Amaala", "TSRDC", "Other"]
+clients_of_interest = ["Neom", "NYP", "Denver", "Amaala", "TRSDC", "Other"]
 df6.loc[~df6.client_name.isin(clients_of_interest), "client_name"] = "Other"
 df7 = (
     df6.groupby(by=["year_opened", "month_opened", "client_name"])
@@ -555,51 +555,83 @@ df7["month_year_style"] = df7.year_month_style.dt.strftime("%b. %Y").apply(
 
 # with st.expander("Ticket count by client"):
 with tab4:
-    # Fig 4: Average tickets by client per month
-    fig, ax = plt.subplots(figsize=(30, 12))
+    col1, col2 = st.columns([0.8, 0.2], gap="small")
 
-    brplot = sns.barplot(
-        data=df7.query("year_month >= '2022-1' and year_month < '2023-6'"),
-        x="month_year_style",
-        y="count",
-        hue="client_name",
-        palette=custom_palette,
-        # palette='viridis',
-        errorbar=None,
-        hue_order=clients_of_interest,
-    )
+    with col1:
+        # Fig 4: Average tickets by client per month
+        fig, ax = plt.subplots(figsize=(30, 12))
 
-    legend = ax.legend(
-        facecolor="white",
-        framealpha=1,
-        fontsize=16,
-        loc="upper left",
-        bbox_to_anchor=(0.01, 1.0051),
-    )
-    legend.get_frame().set_linewidth(0.25)
+        brplot = sns.barplot(
+            data=df7.query("year_month >= '2022-1' and year_month < '2023-6'"),
+            x="month_year_style",
+            y="count",
+            hue="client_name",
+            palette=custom_palette,
+            # palette='viridis',
+            errorbar=None,
+            hue_order=clients_of_interest,
+        )
 
-    ax.set_xlabel("")
-    ax.set_ylabel("Count of Tickets", fontsize=18, labelpad=18)
-    ax.set_xticklabels(ax.get_xticklabels(), fontsize=14)
-    ax.set_yticks(ax.get_yticks())
-    ax.set_yticklabels(ax.get_yticklabels(), fontsize=14)
-    ax.tick_params(axis="both", length=0)
+        legend = ax.legend(
+            facecolor="white",
+            framealpha=1,
+            fontsize=16,
+            loc="upper left",
+            bbox_to_anchor=(0.01, 1.0051),
+        )
+        legend.get_frame().set_linewidth(0.25)
 
-    plt.suptitle(
-        # "The recent influx of tickets is largely due to a significant increase in the number of tickets coming from NEOM and TRSDC in particular",
-        "The recent influx of tickets is largely due to a significant increase in the number of tickets coming from NEOM, TRSDC, and many other clients in aggregate",
-        x=0.1121,
-        y=0.93,
-        ha="left",
-        va="bottom",
-        fontsize=20,
-    )
+        ax.set_xlabel("")
+        ax.set_ylabel("Count of Tickets", fontsize=18, labelpad=18)
+        ax.set_xticklabels(ax.get_xticklabels(), fontsize=14)
+        ax.set_yticks(ax.get_yticks())
+        ax.set_yticklabels(ax.get_yticklabels(), fontsize=14)
+        ax.tick_params(axis="both", length=0)
 
-    ax.grid(color="k", linestyle="-", axis="y", alpha=0.1)
-    sns.despine(bottom=True, left=True)
+        plt.suptitle(
+            # "The recent influx of tickets is largely due to a significant increase in the number of tickets coming from NEOM and TRSDC in particular",
+            "The recent influx of tickets is largely due to a significant increase in the number of tickets coming from NEOM, TRSDC, and many other clients in aggregate",
+            x=0.1121,
+            y=0.93,
+            ha="left",
+            va="bottom",
+            fontsize=20,
+        )
 
-    # plt.savefig('count_client_tickets.png', dpi=300, bbox_inches='tight')
-    st.pyplot(fig=fig)
+        ax.grid(color="k", linestyle="-", axis="y", alpha=0.1)
+        sns.despine(bottom=True, left=True)
+
+        # plt.savefig('count_client_tickets.png', dpi=300, bbox_inches='tight')
+        st.pyplot(fig=fig)
+
+    with col2:
+        prev_mo_vals = [
+            df7.query(
+                "`year_opened` == 2023 and `month_opened` == 4 and `client_name` == @i"
+            )["count"].squeeze()
+            for i in clients_of_interest
+        ]
+
+        curr_mo_vals = [
+            df7.query(
+                "`year_opened` == 2023 and `month_opened` == 5 and `client_name` == @i"
+            )["count"].squeeze()
+            for i in clients_of_interest
+        ]
+
+        delta_vals = [
+            round((curr - prev) / prev * 100, 1)
+            for prev, curr in zip(prev_mo_vals, curr_mo_vals)
+        ]
+
+        for idx, i in enumerate(curr_mo_vals):
+            st.metric(
+                label=clients_of_interest[idx],
+                value=i,
+                delta=f"{delta_vals[idx]}%",
+                delta_color="off",
+                help=f"The number of tickets for {clients_of_interest[idx]} changed by {delta_vals[idx]}% month over month",
+            )
 
 progress_bar.progress(80, text=progress_text)
 
