@@ -255,7 +255,7 @@ with tab1:
             label="No. Tickets",
             value=value,
             delta=f"{delta_month}%",
-            delta_color="off",
+            delta_color="inverse",
             help=f"The number of tickets changed by {delta_month}% month over month and by {delta_year}% year over year.",
         )
 
@@ -529,7 +529,7 @@ with tab3:
                 label=products_of_interest[idx],
                 value=i,
                 delta=f"{delta_vals[idx]}%",
-                delta_color="off",
+                delta_color="inverse",
                 help=f"The number of tickets for {products_of_interest[idx]} changed by {delta_vals[idx]}% month over month",
             )
 
@@ -629,7 +629,7 @@ with tab4:
                 label=clients_of_interest[idx],
                 value=i,
                 delta=f"{delta_vals[idx]}%",
-                delta_color="off",
+                delta_color="inverse",
                 help=f"The number of tickets for {clients_of_interest[idx]} changed by {delta_vals[idx]}% month over month",
             )
 
@@ -652,49 +652,80 @@ df8["month_year_style"] = df8.year_month_style.dt.strftime("%b. %Y").apply(
 
 # with st.expander("Average days to close by product"):
 with tab5:
-    # Fig 5: Average tickets by client per month
-    fig, ax = plt.subplots(figsize=(30, 12))
+    col1, col2 = st.columns([0.8, 0.2], gap="small")
 
-    brplot = sns.barplot(
-        data=df8.query("year_month >= '2022-1' and year_month < '2023-5'"),
-        x="month_year_style",
-        y="rounded_days_active",
-        hue="product_type",
-        palette=custom_palette,
-        errorbar=None,
-        hue_order=products_of_interest,
-    )
+    with col1:
+        # Fig 5: Average tickets by client per month
+        fig, ax = plt.subplots(figsize=(30, 12))
 
-    legend = ax.legend(
-        facecolor="white",
-        framealpha=1,
-        fontsize=16,
-        loc="upper right",
-        bbox_to_anchor=(0.95, 1),
-    )
-    legend.get_frame().set_linewidth(0.25)
+        brplot = sns.barplot(
+            data=df8.query("year_month >= '2022-1' and year_month < '2023-5'"),
+            x="month_year_style",
+            y="rounded_days_active",
+            hue="product_type",
+            palette=custom_palette,
+            errorbar=None,
+            hue_order=products_of_interest,
+        )
 
-    ax.set_xlabel("")
-    ax.set_ylabel("Mean days to ticket closure", fontsize=18, labelpad=18)
-    ax.set_xticklabels(ax.get_xticklabels(), fontsize=14)
-    ax.set_yticks(ax.get_yticks())
-    ax.set_yticklabels(ax.get_yticklabels(), fontsize=14)
-    ax.tick_params(axis="both", length=0)
+        legend = ax.legend(
+            facecolor="white",
+            framealpha=1,
+            fontsize=16,
+            loc="upper right",
+            bbox_to_anchor=(0.95, 1),
+        )
+        legend.get_frame().set_linewidth(0.25)
 
-    plt.suptitle(
-        "The average number of days spent on tickets of all products across the board has gone down significantly with time",
-        x=0.113,
-        y=0.93,
-        ha="left",
-        va="bottom",
-        fontsize=20,
-    )
+        ax.set_xlabel("")
+        ax.set_ylabel("Mean days to ticket closure", fontsize=18, labelpad=18)
+        ax.set_xticklabels(ax.get_xticklabels(), fontsize=14)
+        ax.set_yticks(ax.get_yticks())
+        ax.set_yticklabels(ax.get_yticklabels(), fontsize=14)
+        ax.tick_params(axis="both", length=0)
 
-    ax.grid(color="k", linestyle="-", axis="y", alpha=0.1)
-    sns.despine(bottom=True, left=True)
+        plt.suptitle(
+            "The average number of days spent on tickets of all products across the board has gone down significantly with time",
+            x=0.113,
+            y=0.93,
+            ha="left",
+            va="bottom",
+            fontsize=20,
+        )
 
-    # plt.savefig('average_days_by_product.png', dpi=300, bbox_inches='tight')
-    st.pyplot(fig=fig)
+        ax.grid(color="k", linestyle="-", axis="y", alpha=0.1)
+        sns.despine(bottom=True, left=True)
+
+        # plt.savefig('average_days_by_product.png', dpi=300, bbox_inches='tight')
+        st.pyplot(fig=fig)
+
+    with col2:
+        prev_mo_vals = [
+            df8.query(
+                "`year_opened` == 2023 and `month_opened` == 4 and `product_type` == @i"
+            )["rounded_days_active"].squeeze()
+            for i in products_of_interest
+        ]
+
+    curr_mo_vals = [
+        df8.query(
+            "`year_opened` == 2023 and `month_opened` == 5 and `product_type` == @i"
+        )["rounded_days_active"].squeeze()
+        for i in products_of_interest
+    ]
+
+    delta_vals = [
+        round((curr - prev) / prev * 100, 1)
+        for prev, curr in zip(prev_mo_vals, curr_mo_vals)
+    ]
+    for idx, i in enumerate(curr_mo_vals):
+        st.metric(
+            label=products_of_interest[idx],
+            value=i,
+            delta=f"{delta_vals[idx]}%",
+            delta_color="inverse",
+            help=f"The number of tickets for {products_of_interest[idx]} changed by {delta_vals[idx]}% month over month",
+        )
 
 
 progress_bar.progress(100, text=progress_text)
