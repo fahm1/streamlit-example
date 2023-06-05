@@ -462,7 +462,7 @@ with tab3:
 
     with col1:
         # Fig 3: Average tickets by product per month
-        fig, ax = plt.subplots(figsize=(30, 14))
+        fig, ax = plt.subplots(figsize=(30, 13))
 
         brplot = sns.barplot(
             data=df5.query("year_month >= '2022-1' and year_month < '2023-6'"),
@@ -558,7 +558,7 @@ with tab4:
 
     with col1:
         # Fig 4: Average tickets by client per month
-        fig, ax = plt.subplots(figsize=(30, 12))
+        fig, ax = plt.subplots(figsize=(30, 13))
 
         brplot = sns.barplot(
             data=df7.query("year_month >= '2022-1' and year_month < '2023-6'"),
@@ -655,7 +655,7 @@ with tab5:
 
     with col1:
         # Fig 5: Average tickets by client per month
-        fig, ax = plt.subplots(figsize=(30, 12))
+        fig, ax = plt.subplots(figsize=(30, 13))
 
         brplot = sns.barplot(
             data=df8.query("year_month >= '2022-1' and year_month < '2023-6'"),
