@@ -254,10 +254,14 @@ with tab1:
         st.metric(
             label="No. Tickets",
             value=value,
-            delta=f"{delta_month}% MoM",
+            delta=f"{delta_month}%",
             delta_color="inverse",
-            help=f"The number of tickets changed by{delta_month}% month over month and by {delta_year}% year over year.",
+            help=f"The number of tickets changed by {delta_month}% month over month and by {delta_year}% year over year.",
         )
+
+        # could add a mini dataframe to show some of the raw data for the past few months, or all within the selected range actually
+
+        st.dataframe(df_monthly_grouped, use_container_width=True, hide_index=True)
 
 progress_bar.progress(20, text=progress_text)
 
@@ -570,59 +574,9 @@ with tab5:
 progress_bar.progress(100, text=progress_text)
 
 success_message = st.success("Done!", icon="✅")
-st.balloons()
+# st.balloons()
 
 time.sleep(3)
 upload_success.empty()
 progress_bar.empty()
 success_message.empty()
-
-
-# import requests
-# import streamlit as st
-
-# # url = "https://www.tiktok.com/@osamamustufa786/video/7206645648219737370?is_from_webapp=1&sender_device=pc"
-# url = st.text_input(
-#     label="url box", placeholder="Input a TikTok URL here: ", max_chars=200
-# )
-
-# if not url:
-#     st.warning("Please enter a valid TikTok link")
-#     st.stop()
-
-# st.success("Loading...")
-
-# headers = {
-#     "authority": "tikwm.com",
-#     "accept": "application/json, text/javascript, */*; q=0.01",
-#     "accept-language": "en-US,en;q=0.9",
-#     "content-type": "application/x-www-form-urlencoded; charset=UTF-8",
-#     "origin": "https://tikwm.com",
-#     "referer": "https://tikwm.com/",
-#     "sec-ch-ua": '"Chromium";v="112", "Microsoft Edge";v="112", "Not:A-Brand";v="99"',
-#     "sec-ch-ua-mobile": "?0",
-#     "sec-ch-ua-platform": '"Windows"',
-#     "sec-fetch-dest": "empty",
-#     "sec-fetch-mode": "cors",
-#     "sec-fetch-site": "same-origin",
-#     "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36 Edg/112.0.1722.58",
-#     "x-requested-with": "XMLHttpRequest",
-# }
-
-# data = {
-#     "url": url,
-#     "count": "12",
-#     "cursor": "0",
-#     "web": "1",
-#     "hd": "1",
-# }
-
-# response = requests.post("https://tikwm.com/api/", headers=headers, data=data)
-
-# print(response.status_code)
-# response_data = response.json()
-# print(response_data)
-
-# vid = requests.get(f'https://tikwm.com{response_data["data"]["hdplay"]}').content
-
-# st.video(vid, format="video/mp4")
