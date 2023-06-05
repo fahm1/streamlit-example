@@ -652,7 +652,7 @@ df8["month_year_style"] = df8.year_month_style.dt.strftime("%b. %Y").apply(
 
 # with st.expander("Average days to close by product"):
 with tab5:
-    col1, col2 = st.columns([0.65, 0.2], gap="small")
+    col1, col2 = st.columns([0.8, 0.2], gap="small")
 
     with col1:
         # Fig 5: Average tickets by client per month
@@ -707,25 +707,25 @@ with tab5:
             for i in products_of_interest
         ]
 
-    curr_mo_vals = [
-        df8.query(
-            "`year_opened` == 2023 and `month_opened` == 5 and `product_type` == @i"
-        )["rounded_days_active"].squeeze()
-        for i in products_of_interest
-    ]
+        curr_mo_vals = [
+            df8.query(
+                "`year_opened` == 2023 and `month_opened` == 5 and `product_type` == @i"
+            )["rounded_days_active"].squeeze()
+            for i in products_of_interest
+        ]
 
-    delta_vals = [
-        round((curr - prev) / prev * 100, 1)
-        for prev, curr in zip(prev_mo_vals, curr_mo_vals)
-    ]
-    for idx, i in enumerate(curr_mo_vals):
-        st.metric(
-            label=products_of_interest[idx],
-            value=i,
-            delta=f"{delta_vals[idx]}%",
-            delta_color="inverse",
-            help=f"The number of tickets for {products_of_interest[idx]} changed by {delta_vals[idx]}% month over month",
-        )
+        delta_vals = [
+            round((curr - prev) / prev * 100, 1)
+            for prev, curr in zip(prev_mo_vals, curr_mo_vals)
+        ]
+        for idx, i in enumerate(curr_mo_vals):
+            st.metric(
+                label=products_of_interest[idx],
+                value=i,
+                delta=f"{delta_vals[idx]}%",
+                delta_color="inverse",
+                help=f"The number of tickets for {products_of_interest[idx]} changed by {delta_vals[idx]}% month over month",
+            )
 
 
 progress_bar.progress(100, text=progress_text)
