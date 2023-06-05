@@ -6,8 +6,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import streamlit as st
 
-# import matplotlib.cm as cm
-
+# todo: update calculations for first 2 charts
 # st.set_page_config(layout="wide")
 st.set_page_config(
     page_title="Enstoa COE KPI Report",
@@ -463,7 +462,7 @@ with tab3:
 
     with col1:
         # Fig 3: Average tickets by product per month
-        fig, ax = plt.subplots(figsize=(30, 12))
+        fig, ax = plt.subplots(figsize=(30, 14))
 
         brplot = sns.barplot(
             data=df5.query("year_month >= '2022-1' and year_month < '2023-6'"),
