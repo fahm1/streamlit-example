@@ -28,55 +28,7 @@ Questions / comments / concerns / requests: [fislam@enstoa.com](mailto:fislam@en
 
 @st.cache_data()
 def load_data(file):
-    return pd.read_csv(file)
-
-
-# import requests
-
-# url = st.text_input(
-#     label="url box", placeholder="Input a TikTok URL here: ", max_chars=200
-# )
-
-# if not url:
-#     st.warning("Please enter a valid TikTok link")
-#     st.stop()
-
-# st.success("Loading...")
-
-# headers = {
-#     "authority": "tikwm.com",
-#     "accept": "application/json, text/javascript, */*; q=0.01",
-#     "accept-language": "en-US,en;q=0.9",
-#     "content-type": "application/x-www-form-urlencoded; charset=UTF-8",
-#     "origin": "https://tikwm.com",
-#     "referer": "https://tikwm.com/",
-#     "sec-ch-ua": '"Chromium";v="112", "Microsoft Edge";v="112", "Not:A-Brand";v="99"',
-#     "sec-ch-ua-mobile": "?0",
-#     "sec-ch-ua-platform": '"Windows"',
-#     "sec-fetch-dest": "empty",
-#     "sec-fetch-mode": "cors",
-#     "sec-fetch-site": "same-origin",
-#     "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36 Edg/112.0.1722.58",
-#     "x-requested-with": "XMLHttpRequest",
-# }
-
-# data = {
-#     "url": url,
-#     "count": "12",
-#     "cursor": "0",
-#     "web": "1",
-#     "hd": "1",
-# }
-
-# response = requests.post("https://tikwm.com/api/", headers=headers, data=data)
-
-# # print(response.status_code)
-# response_data = response.json()
-# # print(response_data)
-
-# vid = requests.get(f'https://tikwm.com{response_data["data"]["hdplay"]}').content
-
-# st.video(vid, format="video/mp4")
+    return pd.read_excel(file)
 
 
 st.subheader("Input CSV below")
@@ -107,11 +59,6 @@ tab1, tab2, tab3, tab4, tab5 = st.tabs(
 )
 
 df = load_data(uploaded_file)
-
-# st.subheader("Dataframe")
-# st.write(df.head(3))
-# st.subheader("basic df info")
-# st.write(df.describe())
 
 # Pre-processing
 
@@ -149,6 +96,7 @@ df = df.astype(
 )
 
 # Feature engineering
+
 df["days_active"] = df.ticket_updated_date - df.requested_date
 df["month_opened"] = df.requested_date.dt.month
 df["year_opened"] = df.requested_date.dt.year
@@ -176,98 +124,119 @@ custom_palette = sns.color_palette(
 
 # with st.expander("Tickets Per Month"):
 with tab1:
-    # Fig 1: Tickets per month
-    fig, ax = plt.subplots(figsize=(13.6, 8))
+    col1, col2 = st.columns([0.8, 0.2], gap="small")
 
-    bplot = sns.barplot(
-        data=df_monthly_grouped.query("year_opened >= 2019"),
-        x="month_opened",
-        y="ticket_count",
-        hue="year_opened",
-        palette=custom_palette,
-        ax=ax,
-        errorbar=None,
-        alpha=0.2,
-    )
+    with col1:
+        # Fig 1: Tickets per month
+        fig, ax = plt.subplots(figsize=(13.6, 8))
 
-    ax.set_xlim(-0.5, 11.5)
-    ax.set_ylim(0, ax.get_ylim()[1])
+        bplot = sns.barplot(
+            data=df_monthly_grouped.query("year_opened >= 2019"),
+            x="month_opened",
+            y="ticket_count",
+            hue="year_opened",
+            palette=custom_palette,
+            ax=ax,
+            errorbar=None,
+            alpha=0.2,
+        )
 
-    ax.legend_.remove()
+        ax.set_xlim(-0.5, 11.5)
+        ax.set_ylim(0, ax.get_ylim()[1])
 
-    ax.set_xticklabels([calendar.month_name[i] for i in range(1, 13)])
-    # ax.set_xlabel("Month of Year", fontsize=14, labelpad=12)
-    ax.set_xlabel("")
-    ax.set_ylabel("Tickets Opened", fontsize=12, labelpad=15)
-    ax.tick_params(axis="both", length=0)
-    ax.tick_params(axis="y", pad=10)
+        ax.legend_.remove()
 
-    ax2 = fig.add_axes([0.119, 0.11, 0.76, 0.77])  # left, bottom, width, height
-    ax2.patch.set_alpha(0)
+        ax.set_xticklabels([calendar.month_name[i] for i in range(1, 13)])
+        # ax.set_xlabel("Month of Year", fontsize=14, labelpad=12)
+        ax.set_xlabel("")
+        ax.set_ylabel("Tickets Opened", fontsize=12, labelpad=15)
+        ax.tick_params(axis="both", length=0)
+        ax.tick_params(axis="y", pad=10)
 
-    lplot = sns.lineplot(
-        data=df_monthly_grouped.query(
-            "(year_opened >= 2019 & year_opened < 2023) | (year_opened == 2023 & month_opened < 5)"
-        ),
-        x="month_opened",
-        y="ticket_count",
-        hue="year_opened",
-        palette=custom_palette[:5],
-        ax=ax2,
-        errorbar=None,
-        alpha=1,
-        legend=True,
-    )
+        ax2 = fig.add_axes([0.119, 0.11, 0.76, 0.77])  # left, bottom, width, height
+        ax2.patch.set_alpha(0)
 
-    ax2.set_xlim(0.125, 12)
-    ax2.set_ylim(0, ax.get_ylim()[1])
+        lplot = sns.lineplot(
+            data=df_monthly_grouped.query(
+                "(year_opened >= 2019 & year_opened < 2023) | (year_opened == 2023 & month_opened < 6)"
+            ),
+            x="month_opened",
+            y="ticket_count",
+            hue="year_opened",
+            palette=custom_palette[:5],
+            ax=ax2,
+            errorbar=None,
+            alpha=1,
+            legend=True,
+        )
 
-    handles, labels = ax2.get_legend_handles_labels()
-    handles = handles[::-1]
-    labels = labels[::-1]
-    legend = ax2.legend(
-        handles,
-        labels,
-        # loc="best",
-        facecolor="white",
-        framealpha=1,
-        bbox_to_anchor=(0.9, 0.728),
-    )
-    # legend.set_title("Year")
-    legend.get_title().set_fontsize(12)
-    legend.get_frame().set_linewidth(0.25)
+        ax2.set_xlim(0.125, 12)
+        ax2.set_ylim(0, ax.get_ylim()[1])
 
-    ax2.set_xticklabels([])
-    ax2.set_yticklabels([])
-    ax2.set_xlabel("")
-    ax2.set_ylabel("")
-    ax2.tick_params(axis="both", length=0)
+        handles, labels = ax2.get_legend_handles_labels()
+        handles = handles[::-1]
+        labels = labels[::-1]
+        legend = ax2.legend(
+            handles,
+            labels,
+            # loc="best",
+            facecolor="white",
+            framealpha=1,
+            bbox_to_anchor=(0.9, 0.728),
+        )
+        # legend.set_title("Year")
+        legend.get_title().set_fontsize(12)
+        legend.get_frame().set_linewidth(0.25)
 
-    ax2.axvline(x=4.25, linestyle="--", color="red", ymin=0, ymax=0.95)
+        ax2.set_xticklabels([])
+        ax2.set_yticklabels([])
+        ax2.set_xlabel("")
+        ax2.set_ylabel("")
+        ax2.tick_params(axis="both", length=0)
 
-    ax2.text(
-        4.37,
-        plt.ylim()[1] * 0.82,
-        "End of full month data for 2023",
-        color="r",
-        ha="left",
-        rotation=0,
-    )
-    ax2.grid(color="k", linestyle="-", axis="y", alpha=0.1)
+        ax2.axvline(x=5.25, linestyle="--", color="red", ymin=0, ymax=0.95)
 
-    plt.suptitle(
-        "The number of tickets opened per month has increased significantly YoY for 2022 and the start of 2023",
-        fontsize=14,
-        ha="left",
-        va="top",
-        x=0.12,
-        y=0.93,
-    )
+        # ax2.text(
+        #     4.37,
+        #     plt.ylim()[1] * 0.82,
+        #     "End of full month data for 2023",
+        #     color="r",
+        #     ha="left",
+        #     rotation=0,
+        # )
+        ax2.grid(color="k", linestyle="-", axis="y", alpha=0.1)
 
-    sns.despine(bottom=True, left=True)
+        plt.suptitle(
+            "Number of Zendesk Tickets Opened by Month for 2019-2023",
+            fontsize=14,
+            ha="left",
+            va="top",
+            x=0.12,
+            y=0.93,
+        )
 
-    # plt.savefig('tickets_per_month.png', dpi=300, bbox_inches='tight')
-    st.pyplot(fig=fig)
+        sns.despine(bottom=True, left=True)
+
+        # plt.savefig('tickets_per_month.png', dpi=300, bbox_inches='tight')
+        st.pyplot(fig=fig)
+
+    with col2:
+        value = df_monthly_grouped.query(
+            "`year_opened` == 2023 and `month_opened` == 5"
+        ).ticket_count.squeeze()
+        delta = round(
+            (
+                df_monthly_grouped.query(
+                    "`year_opened` == 2023 and `month_opened` == 4"
+                ).ticket_count.squeeze()
+                / df_monthly_grouped.query(
+                    "`year_opened` == 2023 and `month_opened` == 5"
+                ).ticket_count.squeeze()
+            )
+            * 100,
+            1,
+        )
+        st.metric(label="No. Tickets", value=value, delta=delta, color="normal")
 
 progress_bar.progress(20, text=progress_text)
 
