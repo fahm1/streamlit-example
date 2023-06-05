@@ -590,7 +590,7 @@ with tab4:
 
         plt.suptitle(
             # "The recent influx of tickets is largely due to a significant increase in the number of tickets coming from NEOM and TRSDC in particular",
-            "The recent influx of tickets is largely due to a significant increase in the number of tickets coming from NEOM, TRSDC, and many other clients in aggregate",
+            "Number of Tickets from each Client per Month 2022 - Present",
             x=0.1121,
             y=0.93,
             ha="left",
@@ -685,7 +685,7 @@ with tab5:
         ax.tick_params(axis="both", length=0)
 
         plt.suptitle(
-            "The average number of days spent on tickets of all products across the board has gone down significantly with time",
+            "Average Number of Days to Close Tickets by Month 2022 - Present",
             x=0.113,
             y=0.93,
             ha="left",
@@ -724,7 +724,7 @@ with tab5:
                 value=i,
                 delta=f"{delta_vals[idx]}%",
                 delta_color="inverse",
-                help=f"The number of tickets for {products_of_interest[idx]} changed by {delta_vals[idx]}% month over month",
+                help=f"The average number of days to close out {products_of_interest[idx]} changed by {delta_vals[idx]}% month over month",
             )
 
 
