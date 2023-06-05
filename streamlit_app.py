@@ -51,8 +51,8 @@ tab1, tab2, tab3, tab4, tab5 = st.tabs(
     [
         "Tickets per Month",
         "Average Days to Close Tickets",
-        "Average Ticket Count by Product",
-        "Average Ticket Count by Client",
+        "Ticket Count by Product",
+        "Ticket Count by Client",
         "Average Days to Close Tickets by Product",
     ]
 )
