@@ -572,7 +572,7 @@ with tab3:
                 value=i,
                 delta=f"{delta_vals[idx]}%",
                 delta_color="inverse",
-                help=f"The number of tickets for {products_of_interest[idx]} changed by {delta_vals[idx]}% month over month",
+                help=f"The number of tickets for {products_of_interest[idx]} {'increased' if delta_vals[idx] > 0 else 'decreased'} by {delta_vals[idx]}% month over month",
             )
 
 
@@ -679,7 +679,7 @@ with tab4:
                 value=i,
                 delta=f"{delta_vals[idx]}%",
                 delta_color="inverse",
-                help=f"The number of tickets for {clients_of_interest[idx]} changed by {delta_vals[idx]}% month over month",
+                help=f"The number of tickets for {clients_of_interest[idx]} {'increased' if delta_vals[idx] > 0 else 'decreased'} by {delta_vals[idx]}% month over month",
             )
 
 progress_bar.progress(80, text=progress_text)
@@ -773,7 +773,7 @@ with tab5:
                 value=i,
                 delta=f"{delta_vals[idx]}%",
                 delta_color="inverse",
-                help=f"The average number of days to close out {products_of_interest[idx]} changed by {delta_vals[idx]}% month over month",
+                help=f"The average number of days to close out {products_of_interest[idx]} {'increased' if delta_vals[idx] > 0 else 'decreased'} by {delta_vals[idx]}% month over month",
             )
 
 
