@@ -62,688 +62,693 @@ tab1, tab2, tab3, tab4, tab5 = st.tabs(
     ]
 )
 
-df = load_data(uploaded_file)
 
-# Pre-processing
+def generate_report():
+    df = load_data(uploaded_file)
 
-df = df.drop(columns=["Latest Update", "Tickets", "Assignee name", "Requester name"])
-init_col_names = list(df.dtypes.reset_index()["index"])
+    # Pre-processing
 
-new_col_names = {
-    init_col_names[0]: "ticket_id",
-    init_col_names[1]: "client_name",
-    init_col_names[2]: "ticket_status",
-    init_col_names[3]: "ticket_type",
-    init_col_names[4]: "ticket_subject",
-    init_col_names[5]: "ticket_priority",
-    init_col_names[7]: "environment",
-    init_col_names[8]: "product_type",
-    init_col_names[6]: "requested_date",
-    init_col_names[9]: "ticket_updated_date",
-}
+    df = df.drop(
+        columns=["Latest Update", "Tickets", "Assignee name", "Requester name"]
+    )
+    init_col_names = list(df.dtypes.reset_index()["index"])
 
-df = df.rename(columns=new_col_names)[new_col_names.values()]
-
-df = df.astype(
-    {
-        # df.columns[0]: 'object',
-        # df.columns[1]: 'object',
-        # df.columns[2]: '',
-        # df.columns[3]: '',
-        # df.columns[4]: '',
-        # df.columns[5]: '',
-        # df.columns[6]: '',
-        # df.columns[7]: '',
-        df.columns[8]: "datetime64[ns]",
-        df.columns[9]: "datetime64[ns]",
+    new_col_names = {
+        init_col_names[0]: "ticket_id",
+        init_col_names[1]: "client_name",
+        init_col_names[2]: "ticket_status",
+        init_col_names[3]: "ticket_type",
+        init_col_names[4]: "ticket_subject",
+        init_col_names[5]: "ticket_priority",
+        init_col_names[7]: "environment",
+        init_col_names[8]: "product_type",
+        init_col_names[6]: "requested_date",
+        init_col_names[9]: "ticket_updated_date",
     }
-)
 
-# Feature engineering
+    df = df.rename(columns=new_col_names)[new_col_names.values()]
 
-df["days_active"] = df.ticket_updated_date - df.requested_date
-df["month_opened"] = df.requested_date.dt.month
-df["year_opened"] = df.requested_date.dt.year
+    df = df.astype(
+        {
+            # df.columns[0]: 'object',
+            # df.columns[1]: 'object',
+            # df.columns[2]: '',
+            # df.columns[3]: '',
+            # df.columns[4]: '',
+            # df.columns[5]: '',
+            # df.columns[6]: '',
+            # df.columns[7]: '',
+            df.columns[8]: "datetime64[ns]",
+            df.columns[9]: "datetime64[ns]",
+        }
+    )
 
-df["day_opened"] = df.requested_date.dt.day_of_year
-df["week_opened"] = df.requested_date.dt.isocalendar().week
+    # Feature engineering
 
-# df_weekly_grouped = (
-#     df.groupby(by=["year_opened", "month_opened", "week_opened"])
-#     .week_opened.count()
-#     .reset_index(name="ticket_count")
-#     .astype({"week_opened": "int32"})
-# )
+    df["days_active"] = df.ticket_updated_date - df.requested_date
+    df["month_opened"] = df.requested_date.dt.month
+    df["year_opened"] = df.requested_date.dt.year
 
-df_monthly_grouped = (
-    df.groupby(by=["year_opened", "month_opened"])
-    .month_opened.count()
-    .reset_index(name="ticket_count")
-    .astype({"month_opened": "int32"})
-)
+    df["day_opened"] = df.requested_date.dt.day_of_year
+    df["week_opened"] = df.requested_date.dt.isocalendar().week
 
-custom_palette = sns.color_palette(
-    ["#264653", "#2A9D8F", "#E9C46A", "#F4A261", "#E76F51", "#E97C61"]
-)
+    # df_weekly_grouped = (
+    #     df.groupby(by=["year_opened", "month_opened", "week_opened"])
+    #     .week_opened.count()
+    #     .reset_index(name="ticket_count")
+    #     .astype({"week_opened": "int32"})
+    # )
 
-# with st.expander("Tickets Per Month"):
-with tab1:
-    col1, col2 = st.columns([0.8, 0.2], gap="small")
+    df_monthly_grouped = (
+        df.groupby(by=["year_opened", "month_opened"])
+        .month_opened.count()
+        .reset_index(name="ticket_count")
+        .astype({"month_opened": "int32"})
+    )
 
-    with col1:
-        # Fig 1: Tickets per month
-        fig, ax = plt.subplots(figsize=(13.6, 8))
+    custom_palette = sns.color_palette(
+        ["#264653", "#2A9D8F", "#E9C46A", "#F4A261", "#E76F51", "#E97C61"]
+    )
 
-        bplot = sns.barplot(
-            data=df_monthly_grouped.query("year_opened >= 2019"),
-            x="month_opened",
-            y="ticket_count",
-            hue="year_opened",
-            palette=custom_palette,
-            ax=ax,
-            errorbar=None,
-            alpha=0.2,
-        )
+    # with st.expander("Tickets Per Month"):
+    with tab1:
+        col1, col2 = st.columns([0.8, 0.2], gap="small")
 
-        ax.set_xlim(-0.5, 11.5)
-        ax.set_ylim(0, ax.get_ylim()[1])
+        with col1:
+            # Fig 1: Tickets per month
+            fig, ax = plt.subplots(figsize=(13.6, 8))
 
-        ax.legend_.remove()
-
-        ax.set_xticklabels([calendar.month_name[i] for i in range(1, 13)])
-        # ax.set_xlabel("Month of Year", fontsize=14, labelpad=12)
-        ax.set_xlabel("")
-        ax.set_ylabel("Tickets Opened", fontsize=12, labelpad=15)
-        ax.tick_params(axis="both", length=0)
-        ax.tick_params(axis="y", pad=10)
-
-        ax2 = fig.add_axes([0.119, 0.11, 0.76, 0.77])  # left, bottom, width, height
-        ax2.patch.set_alpha(0)
-
-        lplot = sns.lineplot(
-            data=df_monthly_grouped.query(
-                "(year_opened >= 2019 & year_opened < 2023) | (year_opened == 2023 & month_opened < 6)"
-            ),
-            x="month_opened",
-            y="ticket_count",
-            hue="year_opened",
-            palette=custom_palette[:5],
-            ax=ax2,
-            errorbar=None,
-            alpha=1,
-            legend=True,
-        )
-
-        ax2.set_xlim(0.125, 12)
-        ax2.set_ylim(0, ax.get_ylim()[1])
-
-        handles, labels = ax2.get_legend_handles_labels()
-        handles = handles[::-1]
-        labels = labels[::-1]
-        legend = ax2.legend(
-            handles,
-            labels,
-            # loc="best",
-            facecolor="white",
-            framealpha=1,
-            bbox_to_anchor=(0.9, 0.728),
-        )
-        # legend.set_title("Year")
-        legend.get_title().set_fontsize(12)
-        legend.get_frame().set_linewidth(0.25)
-
-        ax2.set_xticklabels([])
-        ax2.set_yticklabels([])
-        ax2.set_xlabel("")
-        ax2.set_ylabel("")
-        ax2.tick_params(axis="both", length=0)
-
-        ax2.axvline(x=5.25, linestyle="--", color="red", ymin=0, ymax=0.95)
-
-        # ax2.text(
-        #     4.37,
-        #     plt.ylim()[1] * 0.82,
-        #     "End of full month data for 2023",
-        #     color="r",
-        #     ha="left",
-        #     rotation=0,
-        # )
-        ax2.grid(color="k", linestyle="-", axis="y", alpha=0.1)
-
-        plt.suptitle(
-            "Number of Zendesk Tickets Opened per Month 2019 - 2023",
-            fontsize=14,
-            ha="left",
-            va="top",
-            x=0.12,
-            y=0.93,
-        )
-
-        sns.despine(bottom=True, left=True)
-
-        # plt.savefig('tickets_per_month.png', dpi=300, bbox_inches='tight')
-        st.pyplot(fig=fig)
-
-    import time
-
-    with col2:
-        value = df_monthly_grouped.query(
-            "`year_opened` == 2023 and `month_opened` == 5"
-        ).ticket_count.squeeze()
-
-        delta_month = round(
-            (
-                df_monthly_grouped.query(
-                    "`year_opened` == 2023 and `month_opened` == 4"
-                ).ticket_count.squeeze()
-                / df_monthly_grouped.query(
-                    "`year_opened` == 2023 and `month_opened` == 5"
-                ).ticket_count.squeeze()
+            bplot = sns.barplot(
+                data=df_monthly_grouped.query("year_opened >= 2019"),
+                x="month_opened",
+                y="ticket_count",
+                hue="year_opened",
+                palette=custom_palette,
+                ax=ax,
+                errorbar=None,
+                alpha=0.2,
             )
-            * 100,
-            1,
-        )
 
-        delta_year = round(
-            (
-                df_monthly_grouped.query(
-                    "`year_opened` == 2022 and `month_opened` == 5"
-                ).ticket_count.squeeze()
-                / df_monthly_grouped.query(
-                    "`year_opened` == 2023 and `month_opened` == 5"
-                ).ticket_count.squeeze()
+            ax.set_xlim(-0.5, 11.5)
+            ax.set_ylim(0, ax.get_ylim()[1])
+
+            ax.legend_.remove()
+
+            ax.set_xticklabels([calendar.month_name[i] for i in range(1, 13)])
+            # ax.set_xlabel("Month of Year", fontsize=14, labelpad=12)
+            ax.set_xlabel("")
+            ax.set_ylabel("Tickets Opened", fontsize=12, labelpad=15)
+            ax.tick_params(axis="both", length=0)
+            ax.tick_params(axis="y", pad=10)
+
+            ax2 = fig.add_axes([0.119, 0.11, 0.76, 0.77])  # left, bottom, width, height
+            ax2.patch.set_alpha(0)
+
+            lplot = sns.lineplot(
+                data=df_monthly_grouped.query(
+                    "(year_opened >= 2019 & year_opened < 2023) | (year_opened == 2023 & month_opened < 6)"
+                ),
+                x="month_opened",
+                y="ticket_count",
+                hue="year_opened",
+                palette=custom_palette[:5],
+                ax=ax2,
+                errorbar=None,
+                alpha=1,
+                legend=True,
             )
-            * 100,
-            1,
-        )
 
-        st.metric(
-            label="No. Tickets",
-            value=value,
-            delta=f"{delta_month}%",
-            delta_color="inverse",
-            help=f"The number of tickets changed by {delta_month}% month over month and by {delta_year}% year over year.",
-        )
+            ax2.set_xlim(0.125, 12)
+            ax2.set_ylim(0, ax.get_ylim()[1])
 
-        # could add a mini dataframe to show some of the raw data for the past few months, or all within the selected range actually
-        df_monthly_grouped_styled = df_monthly_grouped[::-1].style.format(
-            {"year_opened": "{:.0f}"}
-        )
+            handles, labels = ax2.get_legend_handles_labels()
+            handles = handles[::-1]
+            labels = labels[::-1]
+            legend = ax2.legend(
+                handles,
+                labels,
+                # loc="best",
+                facecolor="white",
+                framealpha=1,
+                bbox_to_anchor=(0.9, 0.728),
+            )
+            # legend.set_title("Year")
+            legend.get_title().set_fontsize(12)
+            legend.get_frame().set_linewidth(0.25)
 
-        st.dataframe(
-            df_monthly_grouped_styled, use_container_width=True, hide_index=True
-        )
+            ax2.set_xticklabels([])
+            ax2.set_yticklabels([])
+            ax2.set_xlabel("")
+            ax2.set_ylabel("")
+            ax2.tick_params(axis="both", length=0)
 
-progress_bar.progress(20, text=progress_text)
+            ax2.axvline(x=5.25, linestyle="--", color="red", ymin=0, ymax=0.95)
 
-df3 = (
-    df.query("ticket_status == 'Closed' and year_opened >= 2019")
-    .groupby(by=["year_opened", "month_opened"])
-    .days_active.agg(np.mean)
-    .reset_index(name="average_days_active")
-)
+            # ax2.text(
+            #     4.37,
+            #     plt.ylim()[1] * 0.82,
+            #     "End of full month data for 2023",
+            #     color="r",
+            #     ha="left",
+            #     rotation=0,
+            # )
+            ax2.grid(color="k", linestyle="-", axis="y", alpha=0.1)
 
-df3["rounded_days_active"] = np.ceil(
-    df3["average_days_active"].dt.total_seconds() / (24 * 3600)
-).astype(int)
+            plt.suptitle(
+                "Number of Zendesk Tickets Opened per Month 2019 - 2023",
+                fontsize=14,
+                ha="left",
+                va="top",
+                x=0.12,
+                y=0.93,
+            )
 
-# with st.expander("Average days to close tickets"):
-with tab2:
-    col1, col2 = st.columns([0.8, 0.2], gap="small")
+            sns.despine(bottom=True, left=True)
 
-    with col1:
-        # Fig 2: Average tickets per month
-        fig, ax = plt.subplots(figsize=(13.6, 8))
+            # plt.savefig('tickets_per_month.png', dpi=300, bbox_inches='tight')
+            st.pyplot(fig=fig)
 
-        bplot = sns.barplot(
-            data=df3,
-            x="month_opened",
-            y="rounded_days_active",
-            hue="year_opened",
-            palette=custom_palette,
-            ax=ax,
-            errorbar=None,
-            alpha=0.15,
-        )
+        import time
 
-        ax.set_xlim(-0.5, 11.5)
-        ax.set_ylim(0, ax.get_ylim()[1])
+        with col2:
+            value = df_monthly_grouped.query(
+                "`year_opened` == 2023 and `month_opened` == 5"
+            ).ticket_count.squeeze()
 
-        ax.legend_.remove()
-
-        ax.set_xticklabels([calendar.month_name[i] for i in range(1, 13)])
-        # ax.set_xlabel("Month of Year", fontsize=14, labelpad=12)
-        ax.set_xlabel("")
-        ax.set_ylabel("Mean Days to Ticket Closure", fontsize=12, labelpad=15)
-        ax.tick_params(axis="both", length=0)
-        ax.tick_params(axis="y", pad=28)
-
-        ax2 = fig.add_axes([0.1, 0.11, 0.76, 0.77])  # left, bottom, width, height
-        ax2.patch.set_alpha(0)
-
-        lplot = sns.lineplot(
-            data=df3,
-            x="month_opened",
-            y="rounded_days_active",
-            hue="year_opened",
-            palette=custom_palette[:5],
-            ax=ax2,
-            errorbar=None,
-            alpha=1,
-            legend=True,
-        )
-
-        ax2.set_xlim(0.125, 12)
-        ax2.set_ylim(0, ax.get_ylim()[1])
-
-        handles, labels = ax2.get_legend_handles_labels()
-        handles = handles[::-1]
-        labels = labels[::-1]
-        ax2.legend(
-            handles,
-            labels,
-            # loc="best",
-            facecolor="white",
-            framealpha=1,
-            bbox_to_anchor=(0.9, 0.648),
-        )
-        legend.get_title().set_fontsize(12)
-        legend.get_frame().set_linewidth(0.25)
-
-        ax2.set_xticklabels([])
-        ax2.set_yticklabels([])
-        ax2.set_xlabel("")
-        ax2.set_ylabel("")
-        ax2.tick_params(axis="both", length=0)
-
-        ax2.axvline(x=5.55, linestyle="--", color="red", ymin=0, ymax=0.95)
-
-        # ax2.text(
-        #     1.93,
-        #     plt.ylim()[1] * 0.865,
-        #     "End of full month data for 2023",
-        #     color="r",
-        #     ha="left",
-        #     rotation=0,
-        # )
-        ax2.grid(color="k", linestyle="-", axis="y", alpha=0.1)
-
-        plt.suptitle(
-            "Average Number of Days to Close Tickets per Month 2019 - 2023",
-            fontsize=14,
-            ha="left",
-            va="top",
-            x=0.1,
-            y=0.9,
-        )
-
-        sns.despine(bottom=True, left=True)
-
-        # plt.savefig('average_days_to_close.png', dpi=300, bbox_inches='tight')
-        st.pyplot(fig=fig)
-
-    with col2:
-        avg_days_value = df3.query(
-            "`year_opened` == 2023 and `month_opened` == 5"
-        ).rounded_days_active.squeeze()
-
-        delta_month_change_metric = round(
-            (
+            delta_month = round(
                 (
-                    df3.query(
+                    df_monthly_grouped.query(
+                        "`year_opened` == 2023 and `month_opened` == 4"
+                    ).ticket_count.squeeze()
+                    / df_monthly_grouped.query(
                         "`year_opened` == 2023 and `month_opened` == 5"
-                    ).rounded_days_active.squeeze()
-                    - df3.query(
+                    ).ticket_count.squeeze()
+                )
+                * 100,
+                1,
+            )
+
+            delta_year = round(
+                (
+                    df_monthly_grouped.query(
+                        "`year_opened` == 2022 and `month_opened` == 5"
+                    ).ticket_count.squeeze()
+                    / df_monthly_grouped.query(
+                        "`year_opened` == 2023 and `month_opened` == 5"
+                    ).ticket_count.squeeze()
+                )
+                * 100,
+                1,
+            )
+
+            st.metric(
+                label="No. Tickets",
+                value=value,
+                delta=f"{delta_month}%",
+                delta_color="inverse",
+                help=f"The number of tickets changed by {delta_month}% month over month and by {delta_year}% year over year.",
+            )
+
+            # could add a mini dataframe to show some of the raw data for the past few months, or all within the selected range actually
+            df_monthly_grouped_styled = df_monthly_grouped[::-1].style.format(
+                {"year_opened": "{:.0f}"}
+            )
+
+            st.dataframe(
+                df_monthly_grouped_styled, use_container_width=True, hide_index=True
+            )
+
+    progress_bar.progress(20, text=progress_text)
+
+    df3 = (
+        df.query("ticket_status == 'Closed' and year_opened >= 2019")
+        .groupby(by=["year_opened", "month_opened"])
+        .days_active.agg(np.mean)
+        .reset_index(name="average_days_active")
+    )
+
+    df3["rounded_days_active"] = np.ceil(
+        df3["average_days_active"].dt.total_seconds() / (24 * 3600)
+    ).astype(int)
+
+    # with st.expander("Average days to close tickets"):
+    with tab2:
+        col1, col2 = st.columns([0.8, 0.2], gap="small")
+
+        with col1:
+            # Fig 2: Average tickets per month
+            fig, ax = plt.subplots(figsize=(13.6, 8))
+
+            bplot = sns.barplot(
+                data=df3,
+                x="month_opened",
+                y="rounded_days_active",
+                hue="year_opened",
+                palette=custom_palette,
+                ax=ax,
+                errorbar=None,
+                alpha=0.15,
+            )
+
+            ax.set_xlim(-0.5, 11.5)
+            ax.set_ylim(0, ax.get_ylim()[1])
+
+            ax.legend_.remove()
+
+            ax.set_xticklabels([calendar.month_name[i] for i in range(1, 13)])
+            # ax.set_xlabel("Month of Year", fontsize=14, labelpad=12)
+            ax.set_xlabel("")
+            ax.set_ylabel("Mean Days to Ticket Closure", fontsize=12, labelpad=15)
+            ax.tick_params(axis="both", length=0)
+            ax.tick_params(axis="y", pad=28)
+
+            ax2 = fig.add_axes([0.1, 0.11, 0.76, 0.77])  # left, bottom, width, height
+            ax2.patch.set_alpha(0)
+
+            lplot = sns.lineplot(
+                data=df3,
+                x="month_opened",
+                y="rounded_days_active",
+                hue="year_opened",
+                palette=custom_palette[:5],
+                ax=ax2,
+                errorbar=None,
+                alpha=1,
+                legend=True,
+            )
+
+            ax2.set_xlim(0.125, 12)
+            ax2.set_ylim(0, ax.get_ylim()[1])
+
+            handles, labels = ax2.get_legend_handles_labels()
+            handles = handles[::-1]
+            labels = labels[::-1]
+            ax2.legend(
+                handles,
+                labels,
+                # loc="best",
+                facecolor="white",
+                framealpha=1,
+                bbox_to_anchor=(0.9, 0.648),
+            )
+            legend.get_title().set_fontsize(12)
+            legend.get_frame().set_linewidth(0.25)
+
+            ax2.set_xticklabels([])
+            ax2.set_yticklabels([])
+            ax2.set_xlabel("")
+            ax2.set_ylabel("")
+            ax2.tick_params(axis="both", length=0)
+
+            ax2.axvline(x=5.55, linestyle="--", color="red", ymin=0, ymax=0.95)
+
+            # ax2.text(
+            #     1.93,
+            #     plt.ylim()[1] * 0.865,
+            #     "End of full month data for 2023",
+            #     color="r",
+            #     ha="left",
+            #     rotation=0,
+            # )
+            ax2.grid(color="k", linestyle="-", axis="y", alpha=0.1)
+
+            plt.suptitle(
+                "Average Number of Days to Close Tickets per Month 2019 - 2023",
+                fontsize=14,
+                ha="left",
+                va="top",
+                x=0.1,
+                y=0.9,
+            )
+
+            sns.despine(bottom=True, left=True)
+
+            # plt.savefig('average_days_to_close.png', dpi=300, bbox_inches='tight')
+            st.pyplot(fig=fig)
+
+        with col2:
+            avg_days_value = df3.query(
+                "`year_opened` == 2023 and `month_opened` == 5"
+            ).rounded_days_active.squeeze()
+
+            delta_month_change_metric = round(
+                (
+                    (
+                        df3.query(
+                            "`year_opened` == 2023 and `month_opened` == 5"
+                        ).rounded_days_active.squeeze()
+                        - df3.query(
+                            "`year_opened` == 2023 and `month_opened` == 4"
+                        ).rounded_days_active.squeeze()
+                    )
+                    / df3.query(
                         "`year_opened` == 2023 and `month_opened` == 4"
                     ).rounded_days_active.squeeze()
                 )
-                / df3.query(
-                    "`year_opened` == 2023 and `month_opened` == 4"
-                ).rounded_days_active.squeeze()
+                * 100,
+                1,
             )
-            * 100,
-            1,
-        )
 
-        delta_year_change_metric = round(
-            (
+            delta_year_change_metric = round(
                 (
-                    df3.query(
-                        "`year_opened` == 2023 and `month_opened` == 5"
-                    ).rounded_days_active.squeeze()
-                    - df3.query(
+                    (
+                        df3.query(
+                            "`year_opened` == 2023 and `month_opened` == 5"
+                        ).rounded_days_active.squeeze()
+                        - df3.query(
+                            "`year_opened` == 2022 and `month_opened` == 5"
+                        ).rounded_days_active.squeeze()
+                    )
+                    / df3.query(
                         "`year_opened` == 2022 and `month_opened` == 5"
                     ).rounded_days_active.squeeze()
                 )
-                / df3.query(
-                    "`year_opened` == 2022 and `month_opened` == 5"
-                ).rounded_days_active.squeeze()
+                * 100,
+                1,
             )
-            * 100,
-            1,
-        )
-        st.metric(
-            label="Avg. Days to Close",
-            value=avg_days_value,
-            delta=f"{delta_month_change_metric}%",
-            delta_color="inverse",
-            help=f"The average number of days to close a ticket changed by {delta_month_change_metric}% month over month and by {delta_year_change_metric}% year over year.",
-        )
-
-        df3_styled = df3.drop(columns=["average_days_active"])[::-1].style.format(
-            {"year_opened": "{:.0f}"}
-        )
-
-        st.dataframe(df3_styled, use_container_width=True, hide_index=True)
-
-
-progress_bar.progress(40, text=progress_text)
-
-products_of_interest = [
-    "Oracle Primavera Unifier",
-    "Adapters",
-    "Microsoft Power BI",
-    "Enablon",
-    "Oracle Primavera P6",
-    "Other",
-]
-
-df4 = df.copy().query("`product_type`.notnull()")
-df4.loc[~df4.product_type.isin(products_of_interest), "product_type"] = "Other"
-
-df5 = (
-    df4.groupby(by=["year_opened", "month_opened", "product_type"])
-    .product_type.count()
-    .reset_index(name="count")
-)
-
-df5["year_month"] = df5.year_opened.astype(str) + "-" + df5.month_opened.astype(str)
-df5["year_month_style"] = pd.to_datetime(df5["year_month"], format="%Y-%m")
-df5["month_year_style"] = df5.year_month_style.dt.strftime("%b. %Y").apply(
-    lambda x: x.replace("May.", "May")
-)
-
-# with st.expander("Ticket count by product"):
-with tab3:
-    col1, col2 = st.columns([0.8, 0.2], gap="small")
-
-    with col1:
-        # Fig 3: Average tickets by product per month
-        fig, ax = plt.subplots(figsize=(30, 13))
-
-        brplot = sns.barplot(
-            data=df5.query("year_month >= '2022-1' and year_month < '2023-6'"),
-            x="month_year_style",
-            y="count",
-            hue="product_type",
-            palette=custom_palette,
-            errorbar=None,
-            hue_order=products_of_interest,
-        )
-
-        legend = ax.legend(
-            facecolor="white",
-            framealpha=1,
-            fontsize=16,
-            loc="upper left",
-            bbox_to_anchor=(0.01, 1.0051),
-        )
-        legend.get_frame().set_linewidth(0.25)
-
-        ax.set_xlabel("")
-        ax.set_ylabel("Count of Tickets", fontsize=18, labelpad=18)
-        ax.set_xticklabels(ax.get_xticklabels(), fontsize=14)
-        ax.set_yticks(ax.get_yticks())
-        ax.set_yticklabels(ax.get_yticklabels(), fontsize=14)
-        ax.tick_params(axis="both", length=0)
-
-        plt.suptitle(
-            "Number of Tickets by Product per Month 2022 - Present",
-            x=0.113,
-            y=0.93,
-            ha="left",
-            va="bottom",
-            fontsize=20,
-        )
-
-        ax.grid(color="k", linestyle="-", axis="y", alpha=0.1)
-        sns.despine(bottom=True, left=True)
-
-        # plt.savefig('count_product_tickets.png', dpi=300, bbox_inches='tight')
-        st.pyplot(fig=fig)
-
-    with col2:
-        prev_mo_vals = [
-            df5.query(
-                "`year_opened` == 2023 and `month_opened` == 4 and `product_type` == @i"
-            )["count"].squeeze()
-            for i in products_of_interest
-        ]
-        curr_mo_vals = [
-            df5.query(
-                "`year_opened` == 2023 and `month_opened` == 5 and `product_type` == @i"
-            )["count"].squeeze()
-            for i in products_of_interest
-        ]
-        delta_vals = [
-            round((curr - prev) / prev * 100, 1)
-            for prev, curr in zip(prev_mo_vals, curr_mo_vals)
-        ]
-
-        for idx, i in enumerate(curr_mo_vals):
             st.metric(
-                label=products_of_interest[idx],
-                value=i,
-                delta=f"{delta_vals[idx]}%",
+                label="Avg. Days to Close",
+                value=avg_days_value,
+                delta=f"{delta_month_change_metric}%",
                 delta_color="inverse",
-                help=f"The number of tickets for {products_of_interest[idx]} changed by {delta_vals[idx]}% month over month",
+                help=f"The average number of days to close a ticket changed by {delta_month_change_metric}% month over month and by {delta_year_change_metric}% year over year.",
             )
 
-
-progress_bar.progress(60, text=progress_text)
-
-df6 = df.copy()
-df6.loc[
-    df6.client_name == "The Red Sea Development Co., (TRSDC)", "client_name"
-] = "TRSDC"
-clients_of_interest = [
-    "Neom",
-    "NYP",
-    "Denver",
-    "Amaala",
-    "TRSDC",
-    "Other",
-]  # todo: make this list automated, just find the value_counts of each and list the top however many + others
-df6.loc[~df6.client_name.isin(clients_of_interest), "client_name"] = "Other"
-df7 = (
-    df6.groupby(by=["year_opened", "month_opened", "client_name"])
-    .client_name.count()
-    .reset_index(name="count")
-)
-df7["year_month"] = df7.year_opened.astype(str) + "-" + df7.month_opened.astype(str)
-df7["year_month_style"] = pd.to_datetime(df7["year_month"], format="%Y-%m")
-df7["month_year_style"] = df7.year_month_style.dt.strftime("%b. %Y").apply(
-    lambda x: x.replace("May.", "May")
-)
-
-# with st.expander("Ticket count by client"):
-with tab4:
-    col1, col2 = st.columns([0.8, 0.2], gap="small")
-
-    with col1:
-        # Fig 4: Average tickets by client per month
-        fig, ax = plt.subplots(figsize=(30, 13))
-
-        brplot = sns.barplot(
-            data=df7.query("year_month >= '2022-1' and year_month < '2023-6'"),
-            x="month_year_style",
-            y="count",
-            hue="client_name",
-            palette=custom_palette,
-            # palette='viridis',
-            errorbar=None,
-            hue_order=clients_of_interest,
-        )
-
-        legend = ax.legend(
-            facecolor="white",
-            framealpha=1,
-            fontsize=16,
-            loc="upper left",
-            bbox_to_anchor=(0.01, 1.0051),
-        )
-        legend.get_frame().set_linewidth(0.25)
-
-        ax.set_xlabel("")
-        ax.set_ylabel("Count of Tickets", fontsize=18, labelpad=18)
-        ax.set_xticklabels(ax.get_xticklabels(), fontsize=14)
-        ax.set_yticks(ax.get_yticks())
-        ax.set_yticklabels(ax.get_yticklabels(), fontsize=14)
-        ax.tick_params(axis="both", length=0)
-
-        plt.suptitle(
-            # "The recent influx of tickets is largely due to a significant increase in the number of tickets coming from NEOM and TRSDC in particular",
-            "Number of Tickets by Client per Month 2022 - Present",
-            x=0.1121,
-            y=0.93,
-            ha="left",
-            va="bottom",
-            fontsize=20,
-        )
-
-        ax.grid(color="k", linestyle="-", axis="y", alpha=0.1)
-        sns.despine(bottom=True, left=True)
-
-        # plt.savefig('count_client_tickets.png', dpi=300, bbox_inches='tight')
-        st.pyplot(fig=fig)
-
-    with col2:
-        prev_mo_vals = [
-            df7.query(
-                "`year_opened` == 2023 and `month_opened` == 4 and `client_name` == @i"
-            )["count"].squeeze()
-            for i in clients_of_interest
-        ]
-
-        curr_mo_vals = [
-            df7.query(
-                "`year_opened` == 2023 and `month_opened` == 5 and `client_name` == @i"
-            )["count"].squeeze()
-            for i in clients_of_interest
-        ]
-
-        delta_vals = [
-            round((curr - prev) / prev * 100, 1)
-            for prev, curr in zip(prev_mo_vals, curr_mo_vals)
-        ]
-
-        for idx, i in enumerate(curr_mo_vals):
-            st.metric(
-                label=clients_of_interest[idx],
-                value=i,
-                delta=f"{delta_vals[idx]}%",
-                delta_color="inverse",
-                help=f"The number of tickets for {clients_of_interest[idx]} changed by {delta_vals[idx]}% month over month",
+            df3_styled = df3.drop(columns=["average_days_active"])[::-1].style.format(
+                {"year_opened": "{:.0f}"}
             )
 
-progress_bar.progress(80, text=progress_text)
+            st.dataframe(df3_styled, use_container_width=True, hide_index=True)
 
-df8 = df.query("ticket_status == 'Closed'")
-df8 = (
-    df8.groupby(by=["year_opened", "month_opened", "product_type"])
-    .days_active.agg(np.mean)
-    .reset_index(name="average_days_active")
-)
-df8["rounded_days_active"] = np.ceil(
-    df8["average_days_active"].dt.total_seconds() / (24 * 3600)
-).astype(int)
-df8["year_month"] = df8.year_opened.astype(str) + "-" + df8.month_opened.astype(str)
-df8["year_month_style"] = pd.to_datetime(df8["year_month"], format="%Y-%m")
-df8["month_year_style"] = df8.year_month_style.dt.strftime("%b. %Y").apply(
-    lambda x: x.replace("May.", "May")
-)
+    progress_bar.progress(40, text=progress_text)
 
-# with st.expander("Average days to close by product"):
-with tab5:
-    col1, col2 = st.columns([0.8, 0.2], gap="small")
+    products_of_interest = [
+        "Oracle Primavera Unifier",
+        "Adapters",
+        "Microsoft Power BI",
+        "Enablon",
+        "Oracle Primavera P6",
+        "Other",
+    ]
 
-    with col1:
-        # Fig 5: Average tickets by client per month
-        fig, ax = plt.subplots(figsize=(30, 13))
+    df4 = df.copy().query("`product_type`.notnull()")
+    df4.loc[~df4.product_type.isin(products_of_interest), "product_type"] = "Other"
 
-        brplot = sns.barplot(
-            data=df8.query("year_month >= '2022-1' and year_month < '2023-6'"),
-            x="month_year_style",
-            y="rounded_days_active",
-            hue="product_type",
-            palette=custom_palette,
-            errorbar=None,
-            hue_order=products_of_interest,
-        )
+    df5 = (
+        df4.groupby(by=["year_opened", "month_opened", "product_type"])
+        .product_type.count()
+        .reset_index(name="count")
+    )
 
-        legend = ax.legend(
-            facecolor="white",
-            framealpha=1,
-            fontsize=16,
-            loc="upper right",
-            bbox_to_anchor=(0.95, 1),
-        )
-        legend.get_frame().set_linewidth(0.25)
+    df5["year_month"] = df5.year_opened.astype(str) + "-" + df5.month_opened.astype(str)
+    df5["year_month_style"] = pd.to_datetime(df5["year_month"], format="%Y-%m")
+    df5["month_year_style"] = df5.year_month_style.dt.strftime("%b. %Y").apply(
+        lambda x: x.replace("May.", "May")
+    )
 
-        ax.set_xlabel("")
-        ax.set_ylabel("Mean days to ticket closure", fontsize=18, labelpad=18)
-        ax.set_xticklabels(ax.get_xticklabels(), fontsize=14)
-        ax.set_yticks(ax.get_yticks())
-        ax.set_yticklabels(ax.get_yticklabels(), fontsize=14)
-        ax.tick_params(axis="both", length=0)
+    # with st.expander("Ticket count by product"):
+    with tab3:
+        col1, col2 = st.columns([0.8, 0.2], gap="small")
 
-        plt.suptitle(
-            "Average Number of Days to Close Tickets by Product per Month 2022 - Present",
-            x=0.113,
-            y=0.93,
-            ha="left",
-            va="bottom",
-            fontsize=20,
-        )
+        with col1:
+            # Fig 3: Average tickets by product per month
+            fig, ax = plt.subplots(figsize=(30, 13))
 
-        ax.grid(color="k", linestyle="-", axis="y", alpha=0.1)
-        sns.despine(bottom=True, left=True)
-
-        # plt.savefig('average_days_by_product.png', dpi=300, bbox_inches='tight')
-        st.pyplot(fig=fig)
-
-    with col2:
-        prev_mo_vals = [
-            df8.query(
-                "`year_opened` == 2023 and `month_opened` == 4 and `product_type` == @i"
-            )["rounded_days_active"].squeeze()
-            for i in products_of_interest
-        ]
-
-        curr_mo_vals = [
-            df8.query(
-                "`year_opened` == 2023 and `month_opened` == 5 and `product_type` == @i"
-            )["rounded_days_active"].squeeze()
-            for i in products_of_interest
-        ]
-
-        delta_vals = [
-            round((curr - prev) / prev * 100, 1)
-            for prev, curr in zip(prev_mo_vals, curr_mo_vals)
-        ]
-        for idx, i in enumerate(curr_mo_vals):
-            st.metric(
-                label=products_of_interest[idx],
-                value=i,
-                delta=f"{delta_vals[idx]}%",
-                delta_color="inverse",
-                help=f"The average number of days to close out {products_of_interest[idx]} changed by {delta_vals[idx]}% month over month",
+            brplot = sns.barplot(
+                data=df5.query("year_month >= '2022-1' and year_month < '2023-6'"),
+                x="month_year_style",
+                y="count",
+                hue="product_type",
+                palette=custom_palette,
+                errorbar=None,
+                hue_order=products_of_interest,
             )
 
+            legend = ax.legend(
+                facecolor="white",
+                framealpha=1,
+                fontsize=16,
+                loc="upper left",
+                bbox_to_anchor=(0.01, 1.0051),
+            )
+            legend.get_frame().set_linewidth(0.25)
 
-progress_bar.progress(100, text=progress_text)
+            ax.set_xlabel("")
+            ax.set_ylabel("Count of Tickets", fontsize=18, labelpad=18)
+            ax.set_xticklabels(ax.get_xticklabels(), fontsize=14)
+            ax.set_yticks(ax.get_yticks())
+            ax.set_yticklabels(ax.get_yticklabels(), fontsize=14)
+            ax.tick_params(axis="both", length=0)
 
-success_message = st.success("Done!", icon="✅")
+            plt.suptitle(
+                "Number of Tickets by Product per Month 2022 - Present",
+                x=0.113,
+                y=0.93,
+                ha="left",
+                va="bottom",
+                fontsize=20,
+            )
+
+            ax.grid(color="k", linestyle="-", axis="y", alpha=0.1)
+            sns.despine(bottom=True, left=True)
+
+            # plt.savefig('count_product_tickets.png', dpi=300, bbox_inches='tight')
+            st.pyplot(fig=fig)
+
+        with col2:
+            prev_mo_vals = [
+                df5.query(
+                    "`year_opened` == 2023 and `month_opened` == 4 and `product_type` == @i"
+                )["count"].squeeze()
+                for i in products_of_interest
+            ]
+            curr_mo_vals = [
+                df5.query(
+                    "`year_opened` == 2023 and `month_opened` == 5 and `product_type` == @i"
+                )["count"].squeeze()
+                for i in products_of_interest
+            ]
+            delta_vals = [
+                round((curr - prev) / prev * 100, 1)
+                for prev, curr in zip(prev_mo_vals, curr_mo_vals)
+            ]
+
+            for idx, i in enumerate(curr_mo_vals):
+                st.metric(
+                    label=products_of_interest[idx],
+                    value=i,
+                    delta=f"{delta_vals[idx]}%",
+                    delta_color="inverse",
+                    help=f"The number of tickets for {products_of_interest[idx]} changed by {delta_vals[idx]}% month over month",
+                )
+
+    progress_bar.progress(60, text=progress_text)
+
+    df6 = df.copy()
+    df6.loc[
+        df6.client_name == "The Red Sea Development Co., (TRSDC)", "client_name"
+    ] = "TRSDC"
+    clients_of_interest = [
+        "Neom",
+        "NYP",
+        "Denver",
+        "Amaala",
+        "TRSDC",
+        "Other",
+    ]  # todo: make this list automated, just find the value_counts of each and list the top however many + others
+    df6.loc[~df6.client_name.isin(clients_of_interest), "client_name"] = "Other"
+    df7 = (
+        df6.groupby(by=["year_opened", "month_opened", "client_name"])
+        .client_name.count()
+        .reset_index(name="count")
+    )
+    df7["year_month"] = df7.year_opened.astype(str) + "-" + df7.month_opened.astype(str)
+    df7["year_month_style"] = pd.to_datetime(df7["year_month"], format="%Y-%m")
+    df7["month_year_style"] = df7.year_month_style.dt.strftime("%b. %Y").apply(
+        lambda x: x.replace("May.", "May")
+    )
+
+    # with st.expander("Ticket count by client"):
+    with tab4:
+        col1, col2 = st.columns([0.8, 0.2], gap="small")
+
+        with col1:
+            # Fig 4: Average tickets by client per month
+            fig, ax = plt.subplots(figsize=(30, 13))
+
+            brplot = sns.barplot(
+                data=df7.query("year_month >= '2022-1' and year_month < '2023-6'"),
+                x="month_year_style",
+                y="count",
+                hue="client_name",
+                palette=custom_palette,
+                # palette='viridis',
+                errorbar=None,
+                hue_order=clients_of_interest,
+            )
+
+            legend = ax.legend(
+                facecolor="white",
+                framealpha=1,
+                fontsize=16,
+                loc="upper left",
+                bbox_to_anchor=(0.01, 1.0051),
+            )
+            legend.get_frame().set_linewidth(0.25)
+
+            ax.set_xlabel("")
+            ax.set_ylabel("Count of Tickets", fontsize=18, labelpad=18)
+            ax.set_xticklabels(ax.get_xticklabels(), fontsize=14)
+            ax.set_yticks(ax.get_yticks())
+            ax.set_yticklabels(ax.get_yticklabels(), fontsize=14)
+            ax.tick_params(axis="both", length=0)
+
+            plt.suptitle(
+                # "The recent influx of tickets is largely due to a significant increase in the number of tickets coming from NEOM and TRSDC in particular",
+                "Number of Tickets by Client per Month 2022 - Present",
+                x=0.1121,
+                y=0.93,
+                ha="left",
+                va="bottom",
+                fontsize=20,
+            )
+
+            ax.grid(color="k", linestyle="-", axis="y", alpha=0.1)
+            sns.despine(bottom=True, left=True)
+
+            # plt.savefig('count_client_tickets.png', dpi=300, bbox_inches='tight')
+            st.pyplot(fig=fig)
+
+        with col2:
+            prev_mo_vals = [
+                df7.query(
+                    "`year_opened` == 2023 and `month_opened` == 4 and `client_name` == @i"
+                )["count"].squeeze()
+                for i in clients_of_interest
+            ]
+
+            curr_mo_vals = [
+                df7.query(
+                    "`year_opened` == 2023 and `month_opened` == 5 and `client_name` == @i"
+                )["count"].squeeze()
+                for i in clients_of_interest
+            ]
+
+            delta_vals = [
+                round((curr - prev) / prev * 100, 1)
+                for prev, curr in zip(prev_mo_vals, curr_mo_vals)
+            ]
+
+            for idx, i in enumerate(curr_mo_vals):
+                st.metric(
+                    label=clients_of_interest[idx],
+                    value=i,
+                    delta=f"{delta_vals[idx]}%",
+                    delta_color="inverse",
+                    help=f"The number of tickets for {clients_of_interest[idx]} changed by {delta_vals[idx]}% month over month",
+                )
+
+    progress_bar.progress(80, text=progress_text)
+
+    df8 = df.query("ticket_status == 'Closed'")
+    df8 = (
+        df8.groupby(by=["year_opened", "month_opened", "product_type"])
+        .days_active.agg(np.mean)
+        .reset_index(name="average_days_active")
+    )
+    df8["rounded_days_active"] = np.ceil(
+        df8["average_days_active"].dt.total_seconds() / (24 * 3600)
+    ).astype(int)
+    df8["year_month"] = df8.year_opened.astype(str) + "-" + df8.month_opened.astype(str)
+    df8["year_month_style"] = pd.to_datetime(df8["year_month"], format="%Y-%m")
+    df8["month_year_style"] = df8.year_month_style.dt.strftime("%b. %Y").apply(
+        lambda x: x.replace("May.", "May")
+    )
+
+    # with st.expander("Average days to close by product"):
+    with tab5:
+        col1, col2 = st.columns([0.8, 0.2], gap="small")
+
+        with col1:
+            # Fig 5: Average tickets by client per month
+            fig, ax = plt.subplots(figsize=(30, 13))
+
+            brplot = sns.barplot(
+                data=df8.query("year_month >= '2022-1' and year_month < '2023-6'"),
+                x="month_year_style",
+                y="rounded_days_active",
+                hue="product_type",
+                palette=custom_palette,
+                errorbar=None,
+                hue_order=products_of_interest,
+            )
+
+            legend = ax.legend(
+                facecolor="white",
+                framealpha=1,
+                fontsize=16,
+                loc="upper right",
+                bbox_to_anchor=(0.95, 1),
+            )
+            legend.get_frame().set_linewidth(0.25)
+
+            ax.set_xlabel("")
+            ax.set_ylabel("Mean days to ticket closure", fontsize=18, labelpad=18)
+            ax.set_xticklabels(ax.get_xticklabels(), fontsize=14)
+            ax.set_yticks(ax.get_yticks())
+            ax.set_yticklabels(ax.get_yticklabels(), fontsize=14)
+            ax.tick_params(axis="both", length=0)
+
+            plt.suptitle(
+                "Average Number of Days to Close Tickets by Product per Month 2022 - Present",
+                x=0.113,
+                y=0.93,
+                ha="left",
+                va="bottom",
+                fontsize=20,
+            )
+
+            ax.grid(color="k", linestyle="-", axis="y", alpha=0.1)
+            sns.despine(bottom=True, left=True)
+
+            # plt.savefig('average_days_by_product.png', dpi=300, bbox_inches='tight')
+            st.pyplot(fig=fig)
+
+        with col2:
+            prev_mo_vals = [
+                df8.query(
+                    "`year_opened` == 2023 and `month_opened` == 4 and `product_type` == @i"
+                )["rounded_days_active"].squeeze()
+                for i in products_of_interest
+            ]
+
+            curr_mo_vals = [
+                df8.query(
+                    "`year_opened` == 2023 and `month_opened` == 5 and `product_type` == @i"
+                )["rounded_days_active"].squeeze()
+                for i in products_of_interest
+            ]
+
+            delta_vals = [
+                round((curr - prev) / prev * 100, 1)
+                for prev, curr in zip(prev_mo_vals, curr_mo_vals)
+            ]
+            for idx, i in enumerate(curr_mo_vals):
+                st.metric(
+                    label=products_of_interest[idx],
+                    value=i,
+                    delta=f"{delta_vals[idx]}%",
+                    delta_color="inverse",
+                    help=f"The average number of days to close out {products_of_interest[idx]} changed by {delta_vals[idx]}% month over month",
+                )
+
+    progress_bar.progress(100, text=progress_text)
+
+    success_message = st.success("Done!", icon="✅")
+
+    upload_success.empty()
+    progress_bar.empty()
+    success_message.empty()
 
 
 with st.sidebar:
@@ -774,9 +779,11 @@ with st.sidebar:
         index=0,
         help="Please select an ending year for the figures.",
     )
-    start_button = st.button(label="Click to re-run the report")
+    st.write(f"Selected Range:\n{start_month}, {start_year} - {end_month}, {end_year}")
+    start_button = st.button(
+        label="Click to re-run the report", on_click=generate_report()
+    )
 
-    st.write(f"{start_month}, {start_year} - {end_month}, {end_year}")
 
 if not start_button:
     st.warning("Select the button to generate the report")
@@ -785,6 +792,3 @@ if not start_button:
 # st.balloons()
 
 # time.sleep(3)
-upload_success.empty()
-progress_bar.empty()
-success_message.empty()
