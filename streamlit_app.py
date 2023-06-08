@@ -65,7 +65,7 @@ with st.sidebar:
         help="Please select a starting year for the figures.",
     )
     st.subheader("Configure End Date")
-    start_month = st.selectbox(
+    end_month = st.selectbox(
         label="Ending Month",
         options=([calendar.month_name[i] for i in range(1, 13)]),
         index=current_month - 1,
@@ -77,7 +77,13 @@ with st.sidebar:
         index=0,
         help="Please select an ending year for the figures.",
     )
-    start_button = st.button(label="Press this button to re-run the report!")
+    start_button = st.button(label="Click to re-run the report")
+
+    st.write(
+        f"""
+             Start Month: {start_month}, Start Year: {start_year}
+             End Month: {end_month}, End Year: {end_year}"""
+    )
 
 progress_text = "Loading..."
 progress_bar = st.progress(0, progress_text)
