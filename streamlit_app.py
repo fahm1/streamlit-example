@@ -48,38 +48,38 @@ upload_success = st.success(
 current_year = datetime.now().year
 current_month = datetime.now().month
 
-with st.sidebar:
-    st.sidebar.title("Change the date range of the report here")
-    st.subheader("Configure Start Date")
-    start_month = st.selectbox(
-        label="Starting Month",
-        options=([calendar.month_name[i] for i in range(1, 13)]),
-        index=0,
-        help="Please select a starting month for the figures.",
-    )
-    start_year = st.selectbox(
-        label="Starting Year",
-        options=([current_year - i for i in range(0, 10)]),
-        index=1,
-        help="Please select a starting year for the figures.",
-    )
-    st.subheader("Configure End Date")
-    end_month = st.selectbox(
-        label="Ending Month",
-        options=([calendar.month_name[i] for i in range(1, 13)]),
-        index=current_month - 1,
-        help="Please select an ending month for the figures.",
-    )
-    end_year = st.selectbox(
-        label="Ending Year",
-        options=([current_year - i for i in range(0, 10)]),
-        index=0,
-        help="Please select an ending year for the figures.",
-    )
-    # start_button = st.button(label="Click to re-run the report")
+# with st.sidebar:
+#     st.sidebar.title("Change the date range of the report here")
+#     st.subheader("Configure Start Date")
+#     start_month = st.selectbox(
+#         label="Starting Month",
+#         options=([calendar.month_name[i] for i in range(1, 13)]),
+#         index=0,
+#         help="Please select a starting month for the figures.",
+#     )
+#     start_year = st.selectbox(
+#         label="Starting Year",
+#         options=([current_year - i for i in range(0, 10)]),
+#         index=1,
+#         help="Please select a starting year for the figures.",
+#     )
+#     st.subheader("Configure End Date")
+#     end_month = st.selectbox(
+#         label="Ending Month",
+#         options=([calendar.month_name[i] for i in range(1, 13)]),
+#         index=current_month - 1,
+#         help="Please select an ending month for the figures.",
+#     )
+#     end_year = st.selectbox(
+#         label="Ending Year",
+#         options=([current_year - i for i in range(0, 10)]),
+#         index=0,
+#         help="Please select an ending year for the figures.",
+#     )
+#     # start_button = st.button(label="Click to re-run the report")
 
-    st.write(f"Selected Range:")
-    st.write(f"{start_month}, {start_year} - {end_month}, {end_year}")
+#     st.write(f"Selected Range:")
+#     st.write(f"{start_month}, {start_year} - {end_month}, {end_year}")
 
 progress_text = "Loading..."
 progress_bar = st.progress(0, progress_text)
@@ -167,7 +167,8 @@ with tab1:
         fig, ax = plt.subplots(figsize=(13.6, 8))
 
         bplot = sns.barplot(
-            data=df_monthly_grouped.query("year_opened >= 2019"),
+            # data=df_monthly_grouped.query("year_opened >= 2019"),
+            data=df_monthly_grouped.query("year_opened >= @current_year - 4"),
             x="month_opened",
             y="ticket_count",
             hue="year_opened",
@@ -194,7 +195,7 @@ with tab1:
 
         lplot = sns.lineplot(
             data=df_monthly_grouped.query(
-                "(year_opened >= 2019 & year_opened < 2023) | (year_opened == 2023 & month_opened < 6)"
+                "(year_opened >= (@current_year - 4) & year_opened < @current_year) | (year_opened == @current_year & month_opened < @current_month)"
             ),
             x="month_opened",
             y="ticket_count",
@@ -243,7 +244,7 @@ with tab1:
         ax2.grid(color="k", linestyle="-", axis="y", alpha=0.1)
 
         plt.suptitle(
-            "Number of Zendesk Tickets Opened per Month 2019 - 2023",
+            f"Number of Zendesk Tickets Opened per Month {current_year - 4} - {current_year}",
             fontsize=14,
             ha="left",
             va="top",
@@ -258,20 +259,20 @@ with tab1:
 
     with col2:
         value = df_monthly_grouped.query(
-            "`year_opened` == 2023 and `month_opened` == 5"
+            "`year_opened` == @current_year and `month_opened` == @current_month - 1"
         ).ticket_count.squeeze()
 
         delta_month = round(
             (
                 df_monthly_grouped.query(
-                    "`year_opened` == 2023 and `month_opened` == 5"
+                    "`year_opened` == @current_year and `month_opened` == @current_month - 1"
                 ).ticket_count.squeeze()
                 - df_monthly_grouped.query(
-                    "`year_opened` == 2023 and `month_opened` == 4"
+                    "`year_opened` == @current_year and `month_opened` == @current_month - 2"
                 ).ticket_count.squeeze()
             )
             / df_monthly_grouped.query(
-                "`year_opened` == 2023 and `month_opened` == 4"
+                "`year_opened` == @current_year and `month_opened` == @current_month - 2"
             ).ticket_count.squeeze()
             * 100,
             1,
