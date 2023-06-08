@@ -231,7 +231,10 @@ with tab1:
         ax2.set_ylabel("")
         ax2.tick_params(axis="both", length=0)
 
-        ax2.axvline(x=5.25, linestyle="--", color="red", ymin=0, ymax=0.95)
+        if current_month != 1:
+            ax2.axvline(
+                x=current_month - 0.75, linestyle="--", color="red", ymin=0, ymax=0.95
+            )
 
         # ax2.text(
         #     4.37,
@@ -281,14 +284,14 @@ with tab1:
         delta_year = round(
             (
                 df_monthly_grouped.query(
-                    "`year_opened` == 2023 and `month_opened` == 5"
+                    "`year_opened` == @current_year and `month_opened` == @current_month - 1"
                 ).ticket_count.squeeze()
                 - df_monthly_grouped.query(
-                    "`year_opened` == 2022 and `month_opened` == 5"
+                    "`year_opened` == @current_year - 1 and `month_opened` == @current_month - 1"
                 ).ticket_count.squeeze()
             )
             / df_monthly_grouped.query(
-                "`year_opened` == 2022 and `month_opened` == 5"
+                "`year_opened` == @current_year - 1 and `month_opened` == @current_month - 1"
             ).ticket_count.squeeze()
             * 100,
             1,
@@ -302,7 +305,13 @@ with tab1:
             help=f"The number of tickets {'increased' if delta_month > 0 else 'decreased'} by {delta_month}% month over month and {'increased' if delta_year > 0 else 'decreased'} by {delta_year}% year over year.",
         )
 
-        # could add a mini dataframe to show some of the raw data for the past few months, or all within the selected range actually
+        df_monthly_grouped_styled = df_monthly_grouped.rename(
+            columns={
+                "year_opened": "Year",
+                "month_opened": "Month",
+                "ticket_count": "Ticket Count",
+            }
+        )
         df_monthly_grouped_styled = df_monthly_grouped[::-1].style.format(
             {"year_opened": "{:.0f}"}
         )
@@ -330,7 +339,7 @@ with tab2:
 
     with col1:
         # Fig 2: Average tickets per month
-        fig, ax = plt.subplots(figsize=(13.6, 6.5))
+        fig, ax = plt.subplots(figsize=(13.6, 7))
 
         bplot = sns.barplot(
             data=df3,
