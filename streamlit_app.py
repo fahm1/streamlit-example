@@ -76,7 +76,7 @@ with st.sidebar:
         index=0,
         help="Please select an ending year for the figures.",
     )
-    start_button = st.button(label="Click to re-run the report")
+    # start_button = st.button(label="Click to re-run the report")
 
     st.write(f"Selected Range:\n{start_month}, {start_year} - {end_month}, {end_year}")
 
@@ -255,35 +255,63 @@ with tab1:
         # plt.savefig('tickets_per_month.png', dpi=300, bbox_inches='tight')
         st.pyplot(fig=fig)
 
-    import time
-
     with col2:
         value = df_monthly_grouped.query(
             "`year_opened` == 2023 and `month_opened` == 5"
         ).ticket_count.squeeze()
 
+        # delta_month = round(
+        #     (
+        #         df_monthly_grouped.query(
+        #             "`year_opened` == 2023 and `month_opened` == 4"
+        #         ).ticket_count.squeeze()
+        #         / df_monthly_grouped.query(
+        #             "`year_opened` == 2023 and `month_opened` == 5"
+        #         ).ticket_count.squeeze()
+        #     )
+        #     * 100,
+        #     1,
+        # )
         delta_month = round(
             (
                 df_monthly_grouped.query(
                     "`year_opened` == 2023 and `month_opened` == 4"
                 ).ticket_count.squeeze()
-                / df_monthly_grouped.query(
+                - df_monthly_grouped.query(
                     "`year_opened` == 2023 and `month_opened` == 5"
                 ).ticket_count.squeeze()
             )
+            / df_monthly_grouped.query(
+                "`year_opened` == 2023 and `month_opened` == 4"
+            ).ticket_count.squeeze()
             * 100,
             1,
         )
 
+        # delta_year = round(
+        #     (
+        #         df_monthly_grouped.query(
+        #             "`year_opened` == 2022 and `month_opened` == 5"
+        #         ).ticket_count.squeeze()
+        #         / df_monthly_grouped.query(
+        #             "`year_opened` == 2023 and `month_opened` == 5"
+        #         ).ticket_count.squeeze()
+        #     )
+        #     * 100,
+        #     1,
+        # )
         delta_year = round(
             (
                 df_monthly_grouped.query(
-                    "`year_opened` == 2022 and `month_opened` == 5"
-                ).ticket_count.squeeze()
-                / df_monthly_grouped.query(
                     "`year_opened` == 2023 and `month_opened` == 5"
                 ).ticket_count.squeeze()
+                - df_monthly_grouped.query(
+                    "`year_opened` == 2022 and `month_opened` == 5"
+                ).ticket_count.squeeze()
             )
+            / df_monthly_grouped.query(
+                "`year_opened` == 2022 and `month_opened` == 5"
+            ).ticket_count.squeeze()
             * 100,
             1,
         )
