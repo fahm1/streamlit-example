@@ -249,8 +249,10 @@ with tab1:
 
         sns.despine(bottom=True, left=True)
 
-        # plt.savefig('tickets_per_month.png', dpi=300, bbox_inches='tight')
+        plt.savefig("tickets_per_month.png", dpi=300, bbox_inches="tight")
         st.pyplot(fig=fig)
+
+        st.download_button("tickets_per_month.png")
 
     with col2:
         value = df_monthly_grouped.query(
