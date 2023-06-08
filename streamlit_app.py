@@ -252,7 +252,7 @@ with tab1:
         plt.savefig("tickets_per_month.png", dpi=300, bbox_inches="tight")
         st.pyplot(fig=fig)
 
-        st.download_button(label="Download", data="tickets_per_month.png")
+        st.download_button(label="Download", data=open("tickets_per_month.png", "rb"))
 
     with col2:
         value = df_monthly_grouped.query(
