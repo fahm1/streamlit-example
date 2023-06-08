@@ -260,25 +260,13 @@ with tab1:
             "`year_opened` == 2023 and `month_opened` == 5"
         ).ticket_count.squeeze()
 
-        # delta_month = round(
-        #     (
-        #         df_monthly_grouped.query(
-        #             "`year_opened` == 2023 and `month_opened` == 4"
-        #         ).ticket_count.squeeze()
-        #         / df_monthly_grouped.query(
-        #             "`year_opened` == 2023 and `month_opened` == 5"
-        #         ).ticket_count.squeeze()
-        #     )
-        #     * 100,
-        #     1,
-        # )
         delta_month = round(
             (
                 df_monthly_grouped.query(
-                    "`year_opened` == 2023 and `month_opened` == 4"
+                    "`year_opened` == 2023 and `month_opened` == 5"
                 ).ticket_count.squeeze()
                 - df_monthly_grouped.query(
-                    "`year_opened` == 2023 and `month_opened` == 5"
+                    "`year_opened` == 2023 and `month_opened` == 4"
                 ).ticket_count.squeeze()
             )
             / df_monthly_grouped.query(
@@ -288,18 +276,6 @@ with tab1:
             1,
         )
 
-        # delta_year = round(
-        #     (
-        #         df_monthly_grouped.query(
-        #             "`year_opened` == 2022 and `month_opened` == 5"
-        #         ).ticket_count.squeeze()
-        #         / df_monthly_grouped.query(
-        #             "`year_opened` == 2023 and `month_opened` == 5"
-        #         ).ticket_count.squeeze()
-        #     )
-        #     * 100,
-        #     1,
-        # )
         delta_year = round(
             (
                 df_monthly_grouped.query(
@@ -321,7 +297,7 @@ with tab1:
             value=value,
             delta=f"{delta_month}%",
             delta_color="inverse",
-            help=f"The number of tickets changed by {delta_month}% month over month and by {delta_year}% year over year.",
+            help=f"The number of tickets {'increased' if delta_month > 0 else 'decreased'} by {delta_month}% month over month and {'increased' if delta_year > 0 else 'decreased'} by {delta_year}% year over year.",
         )
 
         # could add a mini dataframe to show some of the raw data for the past few months, or all within the selected range actually
