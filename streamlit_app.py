@@ -6,6 +6,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 import streamlit as st
+import zipfile
 
 # todo: update calculations for first 2 charts
 # st.set_page_config(layout="wide")
@@ -252,13 +253,6 @@ with tab1:
         plt.savefig("tickets_per_month.png", dpi=300, bbox_inches="tight")
         st.pyplot(fig=fig)
 
-        st.download_button(
-            label="Download",
-            data=open("tickets_per_month.png", "rb"),
-            mime="application/octet-stream",
-            file_name="tickets_per_month.png",
-        )
-
     with col2:
         value = df_monthly_grouped.query(
             "`year_opened` == @current_year and `month_opened` == @current_month - 1"
@@ -420,7 +414,7 @@ with tab2:
 
         sns.despine(bottom=True, left=True)
 
-        # plt.savefig('average_days_to_close.png', dpi=300, bbox_inches='tight')
+        plt.savefig("average_days_to_close.png", dpi=300, bbox_inches="tight")
         st.pyplot(fig=fig)
 
     with col2:
@@ -560,7 +554,7 @@ with tab3:
         ax.grid(color="k", linestyle="-", axis="y", alpha=0.1)
         sns.despine(bottom=True, left=True)
 
-        # plt.savefig('count_product_tickets.png', dpi=300, bbox_inches='tight')
+        plt.savefig("count_product_tickets.png", dpi=300, bbox_inches="tight")
         st.pyplot(fig=fig)
 
     with col2:
@@ -665,7 +659,7 @@ with tab4:
         ax.grid(color="k", linestyle="-", axis="y", alpha=0.1)
         sns.despine(bottom=True, left=True)
 
-        # plt.savefig('count_client_tickets.png', dpi=300, bbox_inches='tight')
+        plt.savefig("count_client_tickets.png", dpi=300, bbox_inches="tight")
         st.pyplot(fig=fig)
 
     with col2:
@@ -760,7 +754,7 @@ with tab5:
         ax.grid(color="k", linestyle="-", axis="y", alpha=0.1)
         sns.despine(bottom=True, left=True)
 
-        # plt.savefig('average_days_by_product.png', dpi=300, bbox_inches='tight')
+        plt.savefig("average_days_by_product.png", dpi=300, bbox_inches="tight")
         st.pyplot(fig=fig)
 
     with col2:
@@ -795,6 +789,26 @@ with tab5:
 progress_bar.progress(100, text=progress_text)
 
 success_message = st.success("Done!", icon="✅")
+
+figures = [
+    "tickets_per_month.png",
+    "average_days_to_close.png",
+    "count_product_tickets.png",
+    "count_client_tickets.png",
+    "average_days_by_product.png",
+]
+
+with zipfile.ZipFile("figures.zip", "w") as zipf:
+    for figure in figures:
+        zipf.write(figure)
+
+st.download_button(
+    label="Download All Figures",
+    data=open("figures.zip", "rb").read(),
+    # mime="application/octet-stream",
+    mime="application/zip",
+    file_name="figures.zip",
+)
 
 # st.balloons()
 
