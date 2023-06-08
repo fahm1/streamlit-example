@@ -236,14 +236,6 @@ with tab1:
                 x=current_month - 0.75, linestyle="--", color="red", ymin=0, ymax=0.95
             )
 
-        # ax2.text(
-        #     4.37,
-        #     plt.ylim()[1] * 0.82,
-        #     "End of full month data for 2023",
-        #     color="r",
-        #     ha="left",
-        #     rotation=0,
-        # )
         ax2.grid(color="k", linestyle="-", axis="y", alpha=0.1)
 
         plt.suptitle(
@@ -312,8 +304,8 @@ with tab1:
                 "ticket_count": "Ticket Count",
             }
         )
-        df_monthly_grouped_styled = df_monthly_grouped[::-1].style.format(
-            {"year_opened": "{:.0f}"}
+        df_monthly_grouped_styled = df_monthly_grouped_styled[::-1].style.format(
+            {"Year": "{:.0f}"}
         )
 
         st.dataframe(
@@ -323,7 +315,7 @@ with tab1:
 progress_bar.progress(20, text=progress_text)
 
 df3 = (
-    df.query("ticket_status == 'Closed' and year_opened >= 2019")
+    df.query("ticket_status == 'Closed' and year_opened >= @current_year - 4")
     .groupby(by=["year_opened", "month_opened"])
     .days_active.agg(np.mean)
     .reset_index(name="average_days_active")
@@ -402,20 +394,16 @@ with tab2:
         ax2.set_ylabel("")
         ax2.tick_params(axis="both", length=0)
 
-        ax2.axvline(x=5.55, linestyle="--", color="red", ymin=0, ymax=0.95)
+        # ax2.axvline(x=5.55, linestyle="--", color="red", ymin=0, ymax=0.95)
+        if current_month != 1:
+            ax2.axvline(
+                x=current_month - 0.45, linestyle="--", color="red", ymin=0, ymax=0.95
+            )
 
-        # ax2.text(
-        #     1.93,
-        #     plt.ylim()[1] * 0.865,
-        #     "End of full month data for 2023",
-        #     color="r",
-        #     ha="left",
-        #     rotation=0,
-        # )
         ax2.grid(color="k", linestyle="-", axis="y", alpha=0.1)
 
         plt.suptitle(
-            "Average Number of Days to Close Tickets per Month 2019 - 2023",
+            f"Average Number of Days to Close Tickets per Month {current_year - 4} - {current_year}",
             fontsize=14,
             ha="left",
             va="top",
@@ -430,21 +418,21 @@ with tab2:
 
     with col2:
         avg_days_value = df3.query(
-            "`year_opened` == 2023 and `month_opened` == 5"
+            "`year_opened` == @current_year and `month_opened` == @current_month - 1"
         ).rounded_days_active.squeeze()
 
         delta_month_change_metric = round(
             (
                 (
                     df3.query(
-                        "`year_opened` == 2023 and `month_opened` == 5"
+                        "`year_opened` == @current_year and `month_opened` == @current_month - 1"
                     ).rounded_days_active.squeeze()
                     - df3.query(
-                        "`year_opened` == 2023 and `month_opened` == 4"
+                        "`year_opened` == @current_year and `month_opened` == @current_month - 2"
                     ).rounded_days_active.squeeze()
                 )
                 / df3.query(
-                    "`year_opened` == 2023 and `month_opened` == 4"
+                    "`year_opened` == @current_year and `month_opened` == @current_month - 2"
                 ).rounded_days_active.squeeze()
             )
             * 100,
@@ -455,14 +443,14 @@ with tab2:
             (
                 (
                     df3.query(
-                        "`year_opened` == 2023 and `month_opened` == 5"
+                        "`year_opened` == @current_year and `month_opened` == @current_month - 1"
                     ).rounded_days_active.squeeze()
                     - df3.query(
-                        "`year_opened` == 2022 and `month_opened` == 5"
+                        "`year_opened` == @current_year - 1 and `month_opened` == @current_month - 1"
                     ).rounded_days_active.squeeze()
                 )
                 / df3.query(
-                    "`year_opened` == 2022 and `month_opened` == 5"
+                    "`year_opened` == @current_year - 1 and `month_opened` == @current_month - 1"
                 ).rounded_days_active.squeeze()
             )
             * 100,
@@ -485,14 +473,22 @@ with tab2:
 
 progress_bar.progress(40, text=progress_text)
 
-products_of_interest = [
-    "Oracle Primavera Unifier",
-    "Adapters",
-    "Microsoft Power BI",
-    "Enablon",
-    "Oracle Primavera P6",
-    "Other",
-]
+# products_of_interest = [
+#     "Oracle Primavera Unifier",
+#     "Adapters",
+#     "Microsoft Power BI",
+#     "Enablon",
+#     "Oracle Primavera P6",
+#     "Other",
+# ]
+products_of_interest = list(
+    df.product_type.value_counts(dropna=True)[:6].reset_index().product_type
+)
+
+# move 'Other' to the end of the list to make the figures prettier
+if "Other" in products_of_interest:
+    products_of_interest.remove("Other")
+    products_of_interest.append("Other")
 
 df4 = df.copy().query("`product_type`.notnull()")
 df4.loc[~df4.product_type.isin(products_of_interest), "product_type"] = "Other"
@@ -518,7 +514,9 @@ with tab3:
         fig, ax = plt.subplots(figsize=(30, 13))
 
         brplot = sns.barplot(
-            data=df5.query("year_month >= '2022-1' and year_month < '2023-6'"),
+            data=df5.query(
+                f"year_month >= '{current_year - 1}-1' and year_month < '{current_year}-{current_month}'"
+            ),
             x="month_year_style",
             y="count",
             hue="product_type",
@@ -544,7 +542,7 @@ with tab3:
         ax.tick_params(axis="both", length=0)
 
         plt.suptitle(
-            "Number of Tickets by Product per Month 2022 - Present",
+            f"Number of Tickets by Product per Month {current_year - 1} - Present",
             x=0.113,
             y=0.93,
             ha="left",
@@ -561,13 +559,13 @@ with tab3:
     with col2:
         prev_mo_vals = [
             df5.query(
-                "`year_opened` == 2023 and `month_opened` == 4 and `product_type` == @i"
+                "`year_opened` == @current_year and `month_opened` == @current_month - 2 and `product_type` == @i"
             )["count"].squeeze()
             for i in products_of_interest
         ]
         curr_mo_vals = [
             df5.query(
-                "`year_opened` == 2023 and `month_opened` == 5 and `product_type` == @i"
+                "`year_opened` == @current_year and `month_opened` == @current_month - 1 and `product_type` == @i"
             )["count"].squeeze()
             for i in products_of_interest
         ]
