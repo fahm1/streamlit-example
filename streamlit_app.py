@@ -745,7 +745,7 @@ progress_bar.progress(100, text=progress_text)
 success_message = st.success("Done!", icon="✅")
 
 with st.sidebar:
-    st.sidebar.header("Change the date range of the report here")
+    st.sidebar.title("Change the date range of the report here")
     st.subheader("Configure Start Date")
     start_month = st.selectbox(
         label="Starting Month",
@@ -755,7 +755,7 @@ with st.sidebar:
     )
     start_year = st.selectbox(
         label="Starting Year",
-        options=([datetime.datetime.now().year - i for i in range(0, 10)]),
+        options=([current_year - i for i in range(0, 10)]),
         index=1,
         help="Please select a starting year for the figures.",
     )
@@ -768,7 +768,7 @@ with st.sidebar:
     )
     end_year = st.selectbox(
         label="Ending Year",
-        options=([datetime.datetime.now().year - i for i in range(0, 10)]),
+        options=([current_year - i for i in range(0, 10)]),
         index=0,
         help="Please select an ending year for the figures.",
     )
