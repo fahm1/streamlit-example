@@ -745,12 +745,21 @@ progress_bar.progress(100, text=progress_text)
 success_message = st.success("Done!", icon="✅")
 
 with st.sidebar:
+    st.sidebar.header("Change the date range of the report here")
+    st.su
     start_month = st.selectbox(
         label="Starting Month",
         options=([calendar.month_name[i] for i in range(1, 13)]),
         index=current_month - 1,
         help="Please select a starting month for the figures.",
     )
+    start_year = st.selectbox(
+        label="Starting Year",
+        options=([datetime.datetime.now().year - i for i in range(0, 10)]),
+        index=current_month - 1,
+        help="Please select a starting year for the figures.",
+    )
+    start_button = st.button(label="Press this button to run the report!")
 
 # st.balloons()
 
