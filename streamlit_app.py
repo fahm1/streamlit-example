@@ -48,41 +48,6 @@ upload_success = st.success(
 current_year = datetime.now().year
 current_month = datetime.now().month
 
-with st.sidebar:
-    st.sidebar.title("Change the date range of the report here")
-    st.subheader("Configure Start Date")
-    start_month = st.selectbox(
-        label="Starting Month",
-        options=([calendar.month_name[i] for i in range(1, 13)]),
-        index=0,
-        help="Please select a starting month for the figures.",
-    )
-    start_year = st.selectbox(
-        label="Starting Year",
-        options=([current_year - i for i in range(0, 10)]),
-        index=1,
-        help="Please select a starting year for the figures.",
-    )
-    st.subheader("Configure End Date")
-    end_month = st.selectbox(
-        label="Ending Month",
-        options=([calendar.month_name[i] for i in range(1, 13)]),
-        index=current_month - 1,
-        help="Please select an ending month for the figures.",
-    )
-    end_year = st.selectbox(
-        label="Ending Year",
-        options=([current_year - i for i in range(0, 10)]),
-        index=0,
-        help="Please select an ending year for the figures.",
-    )
-    start_button = st.button(label="Click to re-run the report")
-
-    st.write(f"{start_month}, {start_year} - {end_month}, {end_year}")
-
-if not start_button:
-    st.warning("Select the button to generate the report")
-    st.stop()
 
 progress_text = "Loading..."
 progress_bar = st.progress(0, progress_text)
@@ -779,6 +744,43 @@ with tab5:
 progress_bar.progress(100, text=progress_text)
 
 success_message = st.success("Done!", icon="✅")
+
+
+with st.sidebar:
+    st.sidebar.title("Change the date range of the report here")
+    st.subheader("Configure Start Date")
+    start_month = st.selectbox(
+        label="Starting Month",
+        options=([calendar.month_name[i] for i in range(1, 13)]),
+        index=0,
+        help="Please select a starting month for the figures.",
+    )
+    start_year = st.selectbox(
+        label="Starting Year",
+        options=([current_year - i for i in range(0, 10)]),
+        index=1,
+        help="Please select a starting year for the figures.",
+    )
+    st.subheader("Configure End Date")
+    end_month = st.selectbox(
+        label="Ending Month",
+        options=([calendar.month_name[i] for i in range(1, 13)]),
+        index=current_month - 1,
+        help="Please select an ending month for the figures.",
+    )
+    end_year = st.selectbox(
+        label="Ending Year",
+        options=([current_year - i for i in range(0, 10)]),
+        index=0,
+        help="Please select an ending year for the figures.",
+    )
+    start_button = st.button(label="Click to re-run the report")
+
+    st.write(f"{start_month}, {start_year} - {end_month}, {end_year}")
+
+if not start_button:
+    st.warning("Select the button to generate the report")
+    st.stop()
 
 # st.balloons()
 
