@@ -1,5 +1,6 @@
 import time
 import calendar
+from datetime import datetime
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -43,6 +44,9 @@ upload_success = st.success(
     f"{uploaded_file.name} has been successfully uploaded!",
     icon="✅",
 )
+
+current_year = datetime.now().year
+current_month = datetime.now().month
 
 progress_text = "Loading..."
 progress_bar = st.progress(0, progress_text)
@@ -218,6 +222,8 @@ with tab1:
 
         # plt.savefig('tickets_per_month.png', dpi=300, bbox_inches='tight')
         st.pyplot(fig=fig)
+
+    import time
 
     with col2:
         value = df_monthly_grouped.query(
@@ -539,7 +545,14 @@ df6 = df.copy()
 df6.loc[
     df6.client_name == "The Red Sea Development Co., (TRSDC)", "client_name"
 ] = "TRSDC"
-clients_of_interest = ["Neom", "NYP", "Denver", "Amaala", "TRSDC", "Other"]
+clients_of_interest = [
+    "Neom",
+    "NYP",
+    "Denver",
+    "Amaala",
+    "TRSDC",
+    "Other",
+]  # todo: make this list automated, just find the value_counts of each and list the top however many + others
 df6.loc[~df6.client_name.isin(clients_of_interest), "client_name"] = "Other"
 df7 = (
     df6.groupby(by=["year_opened", "month_opened", "client_name"])
@@ -730,7 +743,16 @@ with tab5:
 progress_bar.progress(100, text=progress_text)
 
 success_message = st.success("Done!", icon="✅")
-st.balloons()
+
+with st.sidebar:
+    start_month = st.selectbox(
+        label="Starting Month",
+        options=([calendar.month_name[i] for i in range(1, 13)]),
+        index=current_month - 1,
+        help="Please select a starting month for the figures.",
+    )
+
+# st.balloons()
 
 # time.sleep(3)
 upload_success.empty()
