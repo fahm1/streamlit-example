@@ -164,7 +164,7 @@ with tab1:
 
     with col1:
         # Fig 1: Tickets per month
-        fig, ax = plt.subplots(figsize=(13.6, 8))
+        fig, ax = plt.subplots(figsize=(13.6, 7))
 
         bplot = sns.barplot(
             # data=df_monthly_grouped.query("year_opened >= 2019"),
@@ -330,7 +330,7 @@ with tab2:
 
     with col1:
         # Fig 2: Average tickets per month
-        fig, ax = plt.subplots(figsize=(13.6, 8))
+        fig, ax = plt.subplots(figsize=(13.6, 6.5))
 
         bplot = sns.barplot(
             data=df3,
