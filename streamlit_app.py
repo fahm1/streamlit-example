@@ -48,7 +48,6 @@ upload_success = st.success(
 current_year = datetime.now().year
 current_month = datetime.now().month
 
-
 with st.sidebar:
     st.sidebar.title("Change the date range of the report here")
     st.subheader("Configure Start Date")
@@ -79,11 +78,11 @@ with st.sidebar:
     )
     start_button = st.button(label="Click to re-run the report")
 
-    st.write(
-        f"""
-             Start Month: {start_month}, Start Year: {start_year}
-             End Month: {end_month}, End Year: {end_year}"""
-    )
+    st.write(f"{start_month}, {start_year} - {end_month}, {end_year}")
+
+if not start_button:
+    st.warning("Select the button to generate the report")
+    st.stop()
 
 progress_text = "Loading..."
 progress_bar = st.progress(0, progress_text)
