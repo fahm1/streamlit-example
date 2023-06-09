@@ -776,7 +776,7 @@ def create_figures(data, current_month=None):
     #     mime="application/zip",
     #     file_name="figures.zip",
     # )
-    if download_button.button("Download All Figures"):
+    if download_button.button("Download All Figures", key=1234):
         with open("figures.zip", "rb") as file:
             download_link = f'<a href="data:application/zip;base64,{base64.b64encode(file.read()).decode()}" download="figures.zip">Click to download</a>'
             download_button.markdown(download_link, unsafe_allow_html=True)
