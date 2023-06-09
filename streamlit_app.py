@@ -587,7 +587,9 @@ def create_figures(data, current_month=None):
             fig, ax = plt.subplots(figsize=(30, 13))
 
             brplot = sns.barplot(
-                data=df7.query("year_month >= '2022-1' and year_month < '2023-6'"),
+                data=df7.query(
+                    f"year_month >= '{current_year - 1}-1' and year_month < '{current_year}-{current_month}"
+                ),
                 x="month_year_style",
                 y="count",
                 hue="client_name",
@@ -684,7 +686,9 @@ def create_figures(data, current_month=None):
             fig, ax = plt.subplots(figsize=(30, 13))
 
             brplot = sns.barplot(
-                data=df8.query("year_month >= '2022-1' and year_month < '2023-6'"),
+                data=df8.query(
+                    f"year_month >= '{current_year - 1}-1' and year_month < '{current_year}-{current_month}'"
+                ),
                 x="month_year_style",
                 y="rounded_days_active",
                 hue="product_type",
