@@ -736,7 +736,7 @@ def create_figures(data, current_month=None):
                 )["rounded_days_active"].squeeze()
                 for i in products_of_interest
             ]
-
+            st.write(f"current month: {current_month}")
             curr_mo_vals = [
                 df8.query(
                     "`year_opened` == @current_year and `month_opened` == @current_month - 1 and `product_type` == @i"
