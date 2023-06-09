@@ -39,6 +39,7 @@ def create_figures(data, current_month=None):
     progress_text = "Loading..."
     progress_bar = st.progress(0, progress_text)
 
+    # TODO: move and rename tabs instead of messing around like below
     tab1, tab3, tab4, tab2, tab5 = st.tabs(
         [
             "Tickets per Month",
@@ -742,7 +743,7 @@ def create_figures(data, current_month=None):
                     value=i,
                     delta=f"{delta_vals[idx]}%",
                     delta_color="inverse",
-                    help=f"The average number of days to close out {products_of_interest[idx]} {'increased' if delta_vals[idx] > 0 else 'decreased'} by {delta_vals[idx]}% month over month",
+                    # help=f"The average number of days to close out {products_of_interest[idx]} {'increased' if delta_vals[idx] > 0 else 'decreased'} by {delta_vals[idx]}% month over month",
                 )
 
     progress_bar.progress(100, text=progress_text)
@@ -864,7 +865,7 @@ st.sidebar.write(f"{start_month}, {start_year} - {end_month}, {end_year}")
 
 st.sidebar.divider()
 
-st.sidebar.subheader("Select to an archived report")
+st.sidebar.subheader("Select an option below to view an archived report")
 if st.sidebar.button(label="Run April 2023 Report"):
     create_figures("coe_kpi_04_2023.xlsx", 5)
 if st.sidebar.button(label="Run May 2023 Report"):
