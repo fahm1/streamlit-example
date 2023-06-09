@@ -46,8 +46,7 @@ upload_success = st.success(
 )
 
 current_year = datetime.now().year
-# current_month = datetime.now().month
-current_month = 5
+current_month = datetime.now().month
 
 # with st.sidebar:
 #     st.sidebar.title("Change the date range of the report here")
@@ -85,7 +84,7 @@ current_month = 5
 progress_text = "Loading..."
 progress_bar = st.progress(0, progress_text)
 
-tab1, tab2, tab3, tab4, tab5 = st.tabs(
+tab1, tab3, tab4, tab2, tab5 = st.tabs(
     [
         "Tickets per Month",
         "Average Days to Close Tickets",
