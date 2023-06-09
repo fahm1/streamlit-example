@@ -742,6 +742,7 @@ def create_figures(data, current_month=None):
                 )["rounded_days_active"].squeeze()
                 for i in products_of_interest
             ]
+            st.write(curr_mo_vals)
 
             delta_vals = [
                 round((curr - prev) / prev * 100, 1)
