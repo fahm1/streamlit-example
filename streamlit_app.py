@@ -821,7 +821,7 @@ def create_figures(data):
     # st.balloons()
 
     # time.sleep(3)
-    upload_success.empty()
+    # upload_success.empty()
     progress_bar.empty()
     # success_message.empty()
 
@@ -837,7 +837,42 @@ if uploaded_file:
     )
     create_figures(uploaded_file)
 
-if st.button(label="Run April 2023 Report"):
-    create_figures("coe_kpi_04_2023.xlsx")
-if st.button(label="Run May 2023 Report"):
-    create_figures("coe_kpi_05_2023.xlsx")
+with st.sidebar:
+    st.subheader("Configure Start Date")
+    start_month = st.selectbox(
+        label="Starting Month",
+        options=([calendar.month_name[i] for i in range(1, 13)]),
+        index=0,
+        help="Please select a starting month for the figures.",
+    )
+    start_year = st.selectbox(
+        label="Starting Year",
+        options=([current_year - i for i in range(0, 10)]),
+        index=1,
+        help="Please select a starting year for the figures.",
+    )
+    st.subheader("Configure End Date")
+    end_month = st.selectbox(
+        label="Ending Month",
+        options=([calendar.month_name[i] for i in range(1, 13)]),
+        index=current_month - 1,
+        help="Please select an ending month for the figures.",
+    )
+    end_year = st.selectbox(
+        label="Ending Year",
+        options=([current_year - i for i in range(0, 10)]),
+        index=0,
+        help="Please select an ending year for the figures.",
+    )
+    # start_button = st.button(label="Click to re-run the report")
+
+    st.write(f"Selected Range:")
+    st.write(f"{start_month}, {start_year} - {end_month}, {end_year}")
+
+    st.divider()
+
+    st.subheader("Select to an archived report")
+    if st.button(label="Run April 2023 Report"):
+        create_figures("coe_kpi_04_2023.xlsx")
+    if st.button(label="Run May 2023 Report"):
+        create_figures("coe_kpi_05_2023.xlsx")
