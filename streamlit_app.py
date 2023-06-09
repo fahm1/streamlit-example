@@ -793,6 +793,9 @@ st.subheader("Input Excel file below")
 
 uploaded_file = st.file_uploader(label="hidden label", label_visibility="collapsed")
 
+current_year = datetime.now().year
+current_month = datetime.now().month
+
 if uploaded_file:
     upload_success = st.success(
         f"{uploaded_file.name} has been successfully uploaded!",
@@ -840,8 +843,6 @@ if uploaded_file:
 # if st.button(label="Run May 2023 Report"):
 #     create_figures("coe_kpi_05_2023.xlsx")
 
-current_year = datetime.now().year
-current_month = datetime.now().month
 
 st.sidebar.subheader("Configure Start Date")
 start_month = st.sidebar.selectbox(
