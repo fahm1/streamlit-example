@@ -732,15 +732,14 @@ def create_figures(data, current_month=None):
         with col2:
             prev_mo_vals = [
                 df8.query(
-                    "`year_opened` == @current_year and `month_opened` == @current_month - 2 and `product_type` == @i"
+                    "`year_opened` == @current_year and `month_opened` == @current_month - 3 and `product_type` == @i"
                 )["rounded_days_active"].squeeze()
                 for i in products_of_interest
             ]
-            st.dataframe(df8.drop(columns=["average_days_active", "year_month_style"]))
 
             curr_mo_vals = [
                 df8.query(
-                    "`year_opened` == @current_year and `month_opened` == @current_month - 1 and `product_type` == @i"
+                    "`year_opened` == @current_year and `month_opened` == @current_month - 2 and `product_type` == @i"
                 )["rounded_days_active"].squeeze()
                 for i in products_of_interest
             ]
