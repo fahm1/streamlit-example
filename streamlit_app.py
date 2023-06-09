@@ -735,15 +735,15 @@ def create_figures(data, current_month=None):
                 )["rounded_days_active"].squeeze()
                 for i in products_of_interest
             ]
-            st.write(prev_mo_vals)
+            # st.write(prev_mo_vals)
 
             curr_mo_vals = [
-                df8.query(
+                df8.query(  # current_month - 1 = 4 for april report
                     "`year_opened` == @current_year and `month_opened` == @current_month - 1 and `product_type` == @i"
                 )["rounded_days_active"].squeeze()
                 for i in products_of_interest
             ]
-            st.write(curr_mo_vals)
+            # st.write(curr_mo_vals)
 
             delta_vals = [
                 round((curr - prev) / prev * 100, 1)
@@ -884,7 +884,7 @@ st.sidebar.write(f"{start_month}, {start_year} - {end_month}, {end_year}")
 st.sidebar.divider()
 
 st.sidebar.subheader("Select an option below to view an archived report")
-if st.sidebar.button(label="Run April 2023 Report"):
+if st.sidebar.button(label="Run April 2023 Report (NOT CURRENTLY WORKING)"):
     create_figures("coe_kpi_04_2023.xlsx", 5)
 if st.sidebar.button(label="Run May 2023 Report"):
     create_figures("coe_kpi_05_2023.xlsx", 6)
