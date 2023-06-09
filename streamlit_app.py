@@ -837,9 +837,7 @@ if uploaded_file:
     )
     create_figures(uploaded_file)
 
-april_23_report = st.button(
-    label="Run April 2023 Report", on_click=create_figures("coe_kpi_04_2023.xlsx")
-)
-april_23_report = st.button(
-    label="Run May 2023 Report", on_click=create_figures("coe_kpi_05_2023.xlsx")
-)
+if st.button(label="Run April 2023 Report"):
+    create_figures("coe_kpi_04_2023.xlsx")
+if st.button(label="Run May 2023 Report"):
+    create_figures("coe_kpi_05_2023.xlsx")
