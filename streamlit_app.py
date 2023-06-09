@@ -251,7 +251,7 @@ with tab1:
 
         plt.savefig("tickets_per_month.png", dpi=300, bbox_inches="tight")
         # st.pyplot(fig=fig)
-        st.image(open("tickets_per_month.png", "rb"), use_column_width="auto")
+        st.image("tickets_per_month.png", use_column_width="auto")
 
     with col2:
         value = df_monthly_grouped.query(
