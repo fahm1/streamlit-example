@@ -87,9 +87,9 @@ progress_bar = st.progress(0, progress_text)
 tab1, tab3, tab4, tab2, tab5 = st.tabs(
     [
         "Tickets per Month",
-        "Average Days to Close Tickets",
         "Ticket Count by Product",
         "Ticket Count by Client",
+        "Average Days to Close Tickets",
         "Average Days to Close Tickets by Product",
     ]
 )
