@@ -43,10 +43,10 @@ uploaded_file = st.file_uploader(label="hidden label", label_visibility="collaps
 #     st.warning("Please upload a .xlsx file")
 #     st.stop()
 
-upload_success = st.success(
-    f"{uploaded_file.name} has been successfully uploaded!",
-    icon="✅",
-)
+# upload_success = st.success(
+#     f"{uploaded_file.name} has been successfully uploaded!",
+#     icon="✅",
+# )
 
 
 # with st.sidebar:
