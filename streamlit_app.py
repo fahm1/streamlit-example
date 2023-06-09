@@ -40,6 +40,7 @@ def create_figures(data, current_month=None):
     progress_bar = st.progress(0, progress_text)
 
     # TODO: move and rename tabs instead of messing around like below
+    # TODO: fix image sizing due to sizing changes due to sidebar
     tab1, tab3, tab4, tab2, tab5 = st.tabs(
         [
             "Tickets per Month",
@@ -721,14 +722,14 @@ def create_figures(data, current_month=None):
         with col2:
             prev_mo_vals = [
                 df8.query(
-                    "`year_opened` == 2023 and `month_opened` == 4 and `product_type` == @i"
+                    "`year_opened` == @current_year and `month_opened` == @current_month - 2 and `product_type` == @i"
                 )["rounded_days_active"].squeeze()
                 for i in products_of_interest
             ]
 
             curr_mo_vals = [
                 df8.query(
-                    "`year_opened` == 2023 and `month_opened` == 5 and `product_type` == @i"
+                    "`year_opened` == @current_year and `month_opened` == @current_month - 1 and `product_type` == @i"
                 )["rounded_days_active"].squeeze()
                 for i in products_of_interest
             ]
