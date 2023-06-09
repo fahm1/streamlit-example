@@ -50,7 +50,9 @@ def create_figures(data, current_month=None):
             "Average Days to Close Tickets by Product",
         ]
     )
-    placeholder = st.empty.download_button(label="Download All Figures", disabled=True)
+    placeholder = st.empty().download_button(
+        label="Download All Figures", disabled=True
+    )
 
     df = load_data(data)
 
