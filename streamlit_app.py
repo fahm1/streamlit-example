@@ -46,7 +46,8 @@ upload_success = st.success(
 )
 
 current_year = datetime.now().year
-current_month = datetime.now().month
+# current_month = datetime.now().month
+current_month = 5
 
 # with st.sidebar:
 #     st.sidebar.title("Change the date range of the report here")
@@ -140,13 +141,6 @@ df["year_opened"] = df.requested_date.dt.year
 df["day_opened"] = df.requested_date.dt.day_of_year
 df["week_opened"] = df.requested_date.dt.isocalendar().week
 
-# df_weekly_grouped = (
-#     df.groupby(by=["year_opened", "month_opened", "week_opened"])
-#     .week_opened.count()
-#     .reset_index(name="ticket_count")
-#     .astype({"week_opened": "int32"})
-# )
-
 df_monthly_grouped = (
     df.groupby(by=["year_opened", "month_opened"])
     .month_opened.count()
@@ -167,7 +161,6 @@ with tab1:
         fig, ax = plt.subplots(figsize=(13.6, 7))
 
         bplot = sns.barplot(
-            # data=df_monthly_grouped.query("year_opened >= 2019"),
             data=df_monthly_grouped.query("year_opened >= @current_year - 4"),
             x="month_opened",
             y="ticket_count",
@@ -250,8 +243,7 @@ with tab1:
         sns.despine(bottom=True, left=True)
 
         plt.savefig("tickets_per_month.png", dpi=300, bbox_inches="tight")
-        # st.pyplot(fig=fig)
-        st.image("tickets_per_month.png", use_column_width="auto")
+        st.pyplot(fig=fig)
 
     with col2:
         value = df_monthly_grouped.query(
