@@ -588,7 +588,7 @@ def create_figures(data, current_month=None):
 
             brplot = sns.barplot(
                 data=df7.query(
-                    f"year_month >= '{current_year - 1}-1' and year_month < '{current_year}-{current_month}"
+                    f"year_month >= '{current_year - 1}-1' and year_month < '{current_year}-{current_month}'"
                 ),
                 x="month_year_style",
                 y="count",
