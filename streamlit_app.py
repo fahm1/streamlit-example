@@ -50,9 +50,11 @@ def create_figures(data, current_month=None):
             "Average Days to Close Tickets by Product",
         ]
     )
-    placeholder = st.empty().download_button(
-        label="Download All Figures", disabled=True, data="placeholder"
-    )
+    download_button = st.empty()
+    download_button.button("Download All Figures", disabled=True)
+    # placeholder = st.empty().download_button(
+    #     label="Download All Figures", disabled=True, data="placeholder"
+    # )
 
     df = load_data(data)
 
@@ -766,7 +768,8 @@ def create_figures(data, current_month=None):
         for figure in figures:
             zipf.write(figure)
 
-    placeholder.download_button(
+    download_button.empty()
+    download_button(
         label="Download All Figures",
         data=open("figures.zip", "rb").read(),
         # mime="application/octet-stream",
