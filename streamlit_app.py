@@ -34,9 +34,9 @@ def load_data(file):
     return pd.read_excel(file)
 
 
-st.subheader("Input Excel file below")
+# st.subheader("Input Excel file below")
 
-uploaded_file = st.file_uploader(label="hidden label", label_visibility="collapsed")
+# uploaded_file = st.file_uploader(label="hidden label", label_visibility="collapsed")
 # st.info("☝️ Upload a CSV file")
 
 # if not uploaded_file:
@@ -826,9 +826,20 @@ def create_figures(data):
     # success_message.empty()
 
 
+st.subheader("Input Excel file below")
+
+uploaded_file = st.file_uploader(label="hidden label", label_visibility="collapsed")
+
 if uploaded_file:
     upload_success = st.success(
         f"{uploaded_file.name} has been successfully uploaded!",
         icon="✅",
     )
     create_figures(uploaded_file)
+
+april_23_report = st.button(
+    label="Run April 2023 Report", on_click=create_figures("coe_kpi_04_2023.xlsx")
+)
+april_23_report = st.button(
+    label="Run May 2023 Report", on_click=create_figures("coe_kpi_05_2023.xlsx")
+)
