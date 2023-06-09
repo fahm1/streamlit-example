@@ -211,7 +211,7 @@ def create_figures(data, current_month=None):
 
             sns.despine(bottom=True, left=True)
 
-            plt.savefig("tickets_per_month.png", dpi=300, bbox_inches="tight")
+            # plt.savefig("tickets_per_month.png", dpi=300, bbox_inches="tight")
             st.pyplot(fig=fig)
 
         with col2:
@@ -379,7 +379,7 @@ def create_figures(data, current_month=None):
 
             sns.despine(bottom=True, left=True)
 
-            plt.savefig("average_days_to_close.png", dpi=300, bbox_inches="tight")
+            # plt.savefig("average_days_to_close.png", dpi=300, bbox_inches="tight")
             st.pyplot(fig=fig)
 
         with col2:
@@ -516,7 +516,7 @@ def create_figures(data, current_month=None):
             ax.grid(color="k", linestyle="-", axis="y", alpha=0.1)
             sns.despine(bottom=True, left=True)
 
-            plt.savefig("count_product_tickets.png", dpi=300, bbox_inches="tight")
+            # plt.savefig("count_product_tickets.png", dpi=300, bbox_inches="tight")
             st.pyplot(fig=fig)
 
         with col2:
@@ -629,7 +629,7 @@ def create_figures(data, current_month=None):
             ax.grid(color="k", linestyle="-", axis="y", alpha=0.1)
             sns.despine(bottom=True, left=True)
 
-            plt.savefig("count_client_tickets.png", dpi=300, bbox_inches="tight")
+            # plt.savefig("count_client_tickets.png", dpi=300, bbox_inches="tight")
             st.pyplot(fig=fig)
 
         with col2:
@@ -726,20 +726,20 @@ def create_figures(data, current_month=None):
             ax.grid(color="k", linestyle="-", axis="y", alpha=0.1)
             sns.despine(bottom=True, left=True)
 
-            plt.savefig("average_days_by_product.png", dpi=300, bbox_inches="tight")
+            # plt.savefig("average_days_by_product.png", dpi=300, bbox_inches="tight")
             st.pyplot(fig=fig)
 
         with col2:
             prev_mo_vals = [
                 df8.query(
-                    "`year_opened` == @current_year and `month_opened` == @current_month - 3 and `product_type` == @i"
+                    "`year_opened` == @current_year and `month_opened` == @current_month - 2 and `product_type` == @i"
                 )["rounded_days_active"].squeeze()
                 for i in products_of_interest
             ]
 
             curr_mo_vals = [
                 df8.query(
-                    "`year_opened` == @current_year and `month_opened` == @current_month - 2 and `product_type` == @i"
+                    "`year_opened` == @current_year and `month_opened` == @current_month - 1 and `product_type` == @i"
                 )["rounded_days_active"].squeeze()
                 for i in products_of_interest
             ]
