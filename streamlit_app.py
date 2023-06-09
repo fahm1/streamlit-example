@@ -769,7 +769,7 @@ def create_figures(data, current_month=None):
             zipf.write(figure)
 
     download_button.empty()
-    download_button(
+    st.download_button(
         label="Download All Figures",
         data=open("figures.zip", "rb").read(),
         # mime="application/octet-stream",
