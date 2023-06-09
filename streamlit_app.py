@@ -25,66 +25,17 @@ st.set_page_config(
 Questions / comments / concerns / requests: [fislam@enstoa.com](mailto:fislam@enstoa.com)
 """
 
-current_year = datetime.now().year
-current_month = datetime.now().month
-
 
 @st.cache_data()
 def load_data(file):
     return pd.read_excel(file)
 
 
-# st.subheader("Input Excel file below")
+def create_figures(data, current_month=None):
+    current_year = datetime.now().year
+    if not current_month:
+        current_month = datetime.now().month
 
-# uploaded_file = st.file_uploader(label="hidden label", label_visibility="collapsed")
-# st.info("☝️ Upload a CSV file")
-
-# if not uploaded_file:
-#     st.warning("Please upload a .xlsx file")
-#     st.stop()
-
-# upload_success = st.success(
-#     f"{uploaded_file.name} has been successfully uploaded!",
-#     icon="✅",
-# )
-
-
-# with st.sidebar:
-#     st.sidebar.title("Change the date range of the report here")
-#     st.subheader("Configure Start Date")
-#     start_month = st.selectbox(
-#         label="Starting Month",
-#         options=([calendar.month_name[i] for i in range(1, 13)]),
-#         index=0,
-#         help="Please select a starting month for the figures.",
-#     )
-#     start_year = st.selectbox(
-#         label="Starting Year",
-#         options=([current_year - i for i in range(0, 10)]),
-#         index=1,
-#         help="Please select a starting year for the figures.",
-#     )
-#     st.subheader("Configure End Date")
-#     end_month = st.selectbox(
-#         label="Ending Month",
-#         options=([calendar.month_name[i] for i in range(1, 13)]),
-#         index=current_month - 1,
-#         help="Please select an ending month for the figures.",
-#     )
-#     end_year = st.selectbox(
-#         label="Ending Year",
-#         options=([current_year - i for i in range(0, 10)]),
-#         index=0,
-#         help="Please select an ending year for the figures.",
-#     )
-#     # start_button = st.button(label="Click to re-run the report")
-
-
-#     st.write(f"Selected Range:")
-#     st.write(f"{start_month}, {start_year} - {end_month}, {end_year}")
-
-
-def create_figures(data):
     progress_text = "Loading..."
     progress_bar = st.progress(0, progress_text)
 
@@ -877,6 +828,9 @@ if uploaded_file:
 # if st.button(label="Run May 2023 Report"):
 #     create_figures("coe_kpi_05_2023.xlsx")
 
+current_year = datetime.now().year
+current_month = datetime.now().month
+
 st.sidebar.subheader("Configure Start Date")
 start_month = st.sidebar.selectbox(
     label="Starting Month",
@@ -891,7 +845,7 @@ start_year = st.sidebar.selectbox(
     help="Please select a starting year for the figures.",
 )
 st.sidebar.subheader("Configure End Date")
-end_month = st.selectbox(
+end_month = st.sidebar.selectbox(
     label="Ending Month",
     options=([calendar.month_name[i] for i in range(1, 13)]),
     index=current_month - 1,
@@ -912,6 +866,6 @@ st.sidebar.divider()
 
 st.sidebar.subheader("Select to an archived report")
 if st.sidebar.button(label="Run April 2023 Report"):
-    create_figures("coe_kpi_04_2023.xlsx")
+    create_figures("coe_kpi_04_2023.xlsx", 5)
 if st.sidebar.button(label="Run May 2023 Report"):
-    create_figures("coe_kpi_05_2023.xlsx")
+    create_figures("coe_kpi_05_2023.xlsx", 6)
