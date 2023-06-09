@@ -456,9 +456,15 @@ with tab2:
             help=f"The average number of days to close a ticket  {'increased' if delta_month_change_metric > 0 else 'decreased'} by {delta_month_change_metric}% month over month and  {'increased' if delta_year_change_metric > 0 else 'decreased'} by {delta_year_change_metric}% year over year.",
         )
 
-        df3_styled = df3.drop(columns=["average_days_active"])[::-1].style.format(
-            {"year_opened": "{:.0f}"}
+        df3_styled = df3.drop(columns="average_days_active").rename(
+            columns={
+                "year_opened": "Year",
+                "month_opened": "Month",
+                "rounded_days_active": "Days Active",
+            }
         )
+
+        df3_styled = df3_styled[::-1].style.format({"year_opened": "{:.0f}"})
 
         st.dataframe(df3_styled, use_container_width=True, hide_index=True)
 
