@@ -51,7 +51,7 @@ def create_figures(data, current_month=None):
         ]
     )
     placeholder = st.empty().download_button(
-        label="Download All Figures", disabled=True
+        label="Download All Figures", disabled=True, data="placeholder"
     )
 
     df = load_data(data)
