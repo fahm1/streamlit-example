@@ -8,7 +8,6 @@ import seaborn as sns
 import streamlit as st
 import zipfile
 
-# todo: update calculations for first 2 charts
 # st.set_page_config(layout="wide")
 st.set_page_config(
     page_title="Enstoa COE KPI Report",
@@ -251,7 +250,8 @@ with tab1:
         sns.despine(bottom=True, left=True)
 
         plt.savefig("tickets_per_month.png", dpi=300, bbox_inches="tight")
-        st.pyplot(fig=fig)
+        # st.pyplot(fig=fig)
+        st.image(open("tickets_per_month.png", "rb"), use_column_width="auto")
 
     with col2:
         value = df_monthly_grouped.query(
