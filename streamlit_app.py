@@ -769,13 +769,17 @@ def create_figures(data, current_month=None):
             zipf.write(figure)
 
     download_button.empty()
-    st.download_button(
-        label="Download All Figures",
-        data=open("figures.zip", "rb").read(),
-        # mime="application/octet-stream",
-        mime="application/zip",
-        file_name="figures.zip",
-    )
+    # st.download_button(
+    #     label="Download All Figures",
+    #     data=open("figures.zip", "rb").read(),
+    #     # mime="application/octet-stream",
+    #     mime="application/zip",
+    #     file_name="figures.zip",
+    # )
+    if download_button.button("Download All Figures"):
+        with open("figures.zip", "rb") as file:
+            download_link = f'<a href="data:application/zip;base64,{base64.b64encode(file.read()).decode()}" download="figures.zip">Click to download</a>'
+            download_button.markdown(download_link, unsafe_allow_html=True)
 
     # st.balloons()
 
