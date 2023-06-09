@@ -41,6 +41,8 @@ def create_figures(data, current_month=None):
 
     # TODO: move and rename tabs instead of messing around like below
     # TODO: fix image sizing due to sizing changes due to sidebar
+    # TODO: add a figure download setting, so that it significantly speeds up
+    #   when figures aren't required to be downloaded, then check on when download time
     tab1, tab3, tab4, tab2, tab5 = st.tabs(
         [
             "Tickets per Month",
@@ -442,14 +444,6 @@ def create_figures(data, current_month=None):
 
     progress_bar.progress(40, text=progress_text)
 
-    # products_of_interest = [
-    #     "Oracle Primavera Unifier",
-    #     "Adapters",
-    #     "Microsoft Power BI",
-    #     "Enablon",
-    #     "Oracle Primavera P6",
-    #     "Other",
-    # ]
     products_of_interest = list(
         df.product_type.value_counts(dropna=True)[:6].reset_index().product_type
     )
@@ -558,14 +552,21 @@ def create_figures(data, current_month=None):
     df6.loc[
         df6.client_name == "The Red Sea Development Co., (TRSDC)", "client_name"
     ] = "TRSDC"
-    clients_of_interest = [
-        "Neom",
-        "NYP",
-        "Denver",
-        "Amaala",
-        "TRSDC",
-        "Other",
-    ]  # todo: make this list automated, just find the value_counts of each and list the top however many + others
+    # clients_of_interest = [
+    #     "Neom",
+    #     "NYP",
+    #     "Denver",
+    #     "Amaala",
+    #     "TRSDC",
+    #     "Other",
+    # ]
+    # this might be something to consider if including a start date
+    clients_of_interest = list(
+        df6.query("year_opened >= 2022")
+        .client_name.value_counts(dropna=True)[:5]
+        .reset_index()
+        .client_name
+    ) + ["Other"]
     df6.loc[~df6.client_name.isin(clients_of_interest), "client_name"] = "Other"
     df7 = (
         df6.groupby(by=["year_opened", "month_opened", "client_name"])
@@ -735,15 +736,13 @@ def create_figures(data, current_month=None):
                 )["rounded_days_active"].squeeze()
                 for i in products_of_interest
             ]
-            # st.write(prev_mo_vals)
 
             curr_mo_vals = [
-                df8.query(  # current_month - 1 = 4 for april report
+                df8.query(
                     "`year_opened` == @current_year and `month_opened` == @current_month - 1 and `product_type` == @i"
                 )["rounded_days_active"].squeeze()
                 for i in products_of_interest
             ]
-            # st.write(curr_mo_vals)
 
             delta_vals = [
                 round((curr - prev) / prev * 100, 1)
