@@ -444,13 +444,25 @@ def create_figures(data, current_month=None):
 
     progress_bar.progress(40, text=progress_text)
 
+    # products_of_interest = list(
+    #     df.product_type.value_counts(dropna=True)[:6].reset_index().product_type
+    # )
+    # if "Other" in products_of_interest:
+    #     products_of_interest.remove("Other")
+    #     products_of_interest.append("Other")
+
+    # also consider start date here
     products_of_interest = list(
-        df.product_type.value_counts(dropna=True)[:6].reset_index().product_type
+        df8.query("year_opened >= 2022 and product_type.notnull()")
+        .product_type.value_counts(dropna=True)[:6]
+        .reset_index()
+        .product_type
     )
 
-    # move 'Other' to the end of the list to make the figures prettier
     if "Other" in products_of_interest:
         products_of_interest.remove("Other")
+        products_of_interest.append("Other")
+    else:
         products_of_interest.append("Other")
 
     df4 = df.copy().query("`product_type`.notnull()")
@@ -552,14 +564,6 @@ def create_figures(data, current_month=None):
     df6.loc[
         df6.client_name == "The Red Sea Development Co., (TRSDC)", "client_name"
     ] = "TRSDC"
-    # clients_of_interest = [
-    #     "Neom",
-    #     "NYP",
-    #     "Denver",
-    #     "Amaala",
-    #     "TRSDC",
-    #     "Other",
-    # ]
     # this might be something to consider if including a start date
     clients_of_interest = list(
         df6.query("year_opened >= 2022")
@@ -663,7 +667,9 @@ def create_figures(data, current_month=None):
 
     progress_bar.progress(80, text=progress_text)
 
-    df8 = df.query("ticket_status == 'Closed'")
+    df8 = df.query("ticket_status == 'Closed' and product_type.notnull()")
+    df8.loc[~df8.product_type.isin(products_of_interest), "product_type"] = "Other"
+
     df8 = (
         df8.groupby(by=["year_opened", "month_opened", "product_type"])
         .days_active.agg(np.mean)
