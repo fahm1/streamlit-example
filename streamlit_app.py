@@ -736,6 +736,7 @@ def create_figures(data, current_month=None):
                 )["rounded_days_active"].squeeze()
                 for i in products_of_interest
             ]
+            st.write(prev_mo_vals)
             st.write(
                 f"`year_opened` == {current_year} and `month_opened` == {current_month - 2} and `product_type` == @i"
             )
@@ -748,6 +749,13 @@ def create_figures(data, current_month=None):
                 )["rounded_days_active"].squeeze()
                 for i in products_of_interest
             ]
+            st.write(curr_mo_vals)
+            st.write(df8)
+            st.write(
+                df8.query(
+                    "`year_opened` == @current_year and `month_opened` == @current_month - 1"
+                )
+            )
 
             delta_vals = [
                 round((curr - prev) / prev * 100, 1)
