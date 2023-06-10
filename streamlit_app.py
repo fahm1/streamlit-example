@@ -53,6 +53,7 @@ def create_figures(data, current_month=None, download_figs=False):
     #   when figures aren't required to be downloaded, then check on when download time
     # TODO: @s don't work well in df.query()s for some reason, replace w f-strings if necessary (mem issue?)
     # TODO: maybe can add a bunch of st.stop()s to act as pauses and to allow multiselect?
+    # TODO: maybe move the download all under the check?
     tab1, tab3, tab4, tab2, tab5 = st.tabs(
         [
             "Tickets per Month",
@@ -972,14 +973,6 @@ uploaded_file = st.file_uploader(label="hidden label", label_visibility="collaps
 current_year = datetime.now().year
 current_month = datetime.now().month
 
-if uploaded_file:
-    upload_success = st.success(
-        f"{uploaded_file.name} has been successfully uploaded!",
-        icon="✅",
-    )
-    create_figures(uploaded_file)
-
-
 st.sidebar.subheader("Configure Start Date")
 start_month = st.sidebar.selectbox(
     label="Starting Month",
@@ -1028,3 +1021,12 @@ if st.sidebar.button(label="May 2023 Report"):
     create_figures(
         data="coe_kpi_05_2023.xlsx", current_month=6, download_figs=download_checkbox
     )
+
+if uploaded_file:
+    # will only work for current month
+    # for example, in june, can run the report with all of may data, but can't run a report with no may data
+    upload_success = st.success(
+        f"{uploaded_file.name} has been successfully uploaded!",
+        icon="✅",
+    )
+    create_figures(data=uploaded_file, download_figs=download_checkbox)
