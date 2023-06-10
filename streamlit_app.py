@@ -7,6 +7,8 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import streamlit as st
 import zipfile
+import base64
+
 
 # st.set_page_config(layout="wide")
 st.set_page_config(
@@ -24,6 +26,12 @@ st.set_page_config(
 
 Questions / comments / concerns / requests: [fislam@enstoa.com](mailto:fislam@enstoa.com)
 """
+
+
+def get_base64_encoded_file(file_path):
+    with open(file_path, "rb") as file:
+        encoded_file = base64.b64encode(file.read()).decode()
+    return encoded_file
 
 
 @st.cache_data()
@@ -215,16 +223,37 @@ def create_figures(data, current_month=None, download_figs=False):
 
             st.pyplot(fig=fig)
             download_tab_1_button = st.empty()
-            download_tab_1_button.button("Download This Figure", disabled=True)
+            download_tab_1_button.button(
+                "Download This Figure", disabled=True, key="tab1_download"
+            )
 
             if download_figs:
                 plt.savefig("tickets_per_month.png", dpi=300, bbox_inches="tight")
                 download_tab_1_button.empty()
-                st.download_button(
-                    label="Download This Figure",
-                    data=open("tickets_per_month.png", "rb"),
-                    mime="application/octet-stream",
-                    file_name="tickets_per_month.png",
+                download_file_path = "tickets_per_month.png"
+                st.markdown(
+                    f"""
+                    <style>
+                    .download-button {{
+                        text-decoration: none;
+                        padding: 6px 12px;
+                        background-color: transparent;
+                        color: white;
+                        border-radius: 4px;
+                        border: 2px solid #D3D3D3;
+                        cursor: pointer;
+                        display: inline-block;
+                        transition: background-color 0.1s, border-color 0.3s, color 0.1s;
+                    }}
+                    .download-button:hover {{
+                        border-color: red;
+                        color: red;
+                    }}
+                    </style>
+                    
+                    <a href="data:application/octet-stream;base64,{get_base64_encoded_file(download_file_path)}" download="tickets_per_month.png" class="download-button">Download This Figure</a>
+                    """,
+                    unsafe_allow_html=True,
                 )
 
         with col2:
@@ -392,9 +421,40 @@ def create_figures(data, current_month=None, download_figs=False):
 
             sns.despine(bottom=True, left=True)
 
+            st.pyplot(fig=fig)
+            download_tab_2_button = st.empty()
+            download_tab_2_button.button(
+                "Download This Figure", disabled=True, key="tab2_download"
+            )
+
             if download_figs:
                 plt.savefig("average_days_to_close.png", dpi=300, bbox_inches="tight")
-            st.pyplot(fig=fig)
+                download_tab_2_button.empty()
+                download_file_path = "average_days_to_close.png"
+                st.markdown(
+                    f"""
+                    <style>
+                    .download-button {{
+                        text-decoration: none;
+                        padding: 6px 12px;
+                        background-color: transparent;
+                        color: white;
+                        border-radius: 4px;
+                        border: 2px solid #D3D3D3;
+                        cursor: pointer;
+                        display: inline-block;
+                        transition: background-color 0.3s, border-color 0.1s, color 0.1s;
+                    }}
+                    .download-button:hover {{
+                        border-color: red;
+                        color: red;
+                    }}
+                    </style>
+                    
+                    <a href="data:application/octet-stream;base64,{get_base64_encoded_file(download_file_path)}" download="average_days_to_close.png" class="download-button">Download This Figure</a>
+                    """,
+                    unsafe_allow_html=True,
+                )
 
         with col2:
             avg_days_value = df3.query(
@@ -535,9 +595,41 @@ def create_figures(data, current_month=None, download_figs=False):
             ax.grid(color="k", linestyle="-", axis="y", alpha=0.1)
             sns.despine(bottom=True, left=True)
 
+            st.pyplot(fig=fig)
+            download_tab_3_button = st.empty()
+            download_tab_3_button.button(
+                "Download This Figure", disabled=True, key="tab3_download"
+            )
+
             if download_figs:
                 plt.savefig("count_product_tickets.png", dpi=300, bbox_inches="tight")
-            st.pyplot(fig=fig)
+                download_tab_3_button.empty()
+                download_file_path = "count_product_tickets.png"
+                st.markdown(
+                    f"""
+                    <style>
+                    .download-button {{
+                        text-decoration: none;
+                        padding: 6px 12px;
+                        background-color: transparent;
+                        color: white;
+                        border-radius: 4px;
+                        border: 2px solid #D3D3D3;
+                        cursor: pointer;
+                        display: inline-block;
+                        transition: background-color 0.3s, border-color 0.1s, color 0.1s;
+                    }}
+                    .download-button:hover {{
+                        border-color: red;
+                        color: red;
+                    }}
+                    </style>
+                    
+                    <a href="data:application/octet-stream;base64,{get_base64_encoded_file(download_file_path)}" download="count_product_tickets.png" class="download-button">Download This Figure</a>
+                    """,
+                    unsafe_allow_html=True,
+                )
+
         with col2:
             prev_mo_vals = [
                 df5.query(
@@ -641,9 +733,40 @@ def create_figures(data, current_month=None, download_figs=False):
             ax.grid(color="k", linestyle="-", axis="y", alpha=0.1)
             sns.despine(bottom=True, left=True)
 
+            st.pyplot(fig=fig)
+            download_tab_4_button = st.empty()
+            download_tab_4_button.button(
+                "Download This Figure", disabled=True, key="tab4_download"
+            )
+
             if download_figs:
                 plt.savefig("count_client_tickets.png", dpi=300, bbox_inches="tight")
-            st.pyplot(fig=fig)
+                download_tab_4_button.empty()
+                download_file_path = "count_client_tickets.png"
+                st.markdown(
+                    f"""
+                    <style>
+                    .download-button {{
+                        text-decoration: none;
+                        padding: 6px 12px;
+                        background-color: transparent;
+                        color: white;
+                        border-radius: 4px;
+                        border: 2px solid #D3D3D3;
+                        cursor: pointer;
+                        display: inline-block;
+                        transition: background-color 0.3s, border-color 0.1s, color 0.1s;
+                    }}
+                    .download-button:hover {{
+                        border-color: red;
+                        color: red;
+                    }}
+                    </style>
+                    
+                    <a href="data:application/octet-stream;base64,{get_base64_encoded_file(download_file_path)}" download="count_client_tickets.png" class="download-button">Download This Figure</a>
+                    """,
+                    unsafe_allow_html=True,
+                )
 
         with col2:
             prev_mo_vals = [
@@ -741,9 +864,40 @@ def create_figures(data, current_month=None, download_figs=False):
             ax.grid(color="k", linestyle="-", axis="y", alpha=0.1)
             sns.despine(bottom=True, left=True)
 
+            st.pyplot(fig=fig)
+            download_tab_5_button = st.empty()
+            download_tab_5_button.button(
+                "Download This Figure", disabled=True, key="tab5_download"
+            )
+
             if download_figs:
                 plt.savefig("average_days_by_product.png", dpi=300, bbox_inches="tight")
-            st.pyplot(fig=fig)
+                download_tab_5_button.empty()
+                download_file_path = "average_days_by_product.png"
+                st.markdown(
+                    f"""
+                    <style>
+                    .download-button {{
+                        text-decoration: none;
+                        padding: 6px 12px;
+                        background-color: transparent;
+                        color: white;
+                        border-radius: 4px;
+                        border: 2px solid #D3D3D3;
+                        cursor: pointer;
+                        display: inline-block;
+                        transition: background-color 0.3s, border-color 0.1s, color 0.1s;
+                    }}
+                    .download-button:hover {{
+                        border-color: red;
+                        color: red;
+                    }}
+                    </style>
+                    
+                    <a href="data:application/octet-stream;base64,{get_base64_encoded_file(download_file_path)}" download="average_days_by_product.png" class="download-button">Download This Figure</a>
+                    """,
+                    unsafe_allow_html=True,
+                )
 
         with col2:
             prev_mo_vals = [
@@ -791,12 +945,18 @@ def create_figures(data, current_month=None, download_figs=False):
                 zipf.write(figure)
 
         download_button.empty()
-        st.download_button(
-            label="Download All Figures",
-            data=open("figures.zip", "rb").read(),
-            # mime="application/octet-stream",
-            mime="application/zip",
-            file_name="figures.zip",
+        # st.download_button(
+        #     label="Download All Figures",
+        #     data=open("figures.zip", "rb").read(),
+        #     # mime="application/octet-stream",
+        #     mime="application/zip",
+        #     file_name="figures.zip",
+        # )
+        st.markdown(
+            f"""
+        <a href="data:application/zip;base64,{get_base64_encoded_file("figures.zip")}" download="figures.zip" class="download-button">Download All Figures</a>
+        """,
+            unsafe_allow_html=True,
         )
 
     # time.sleep(3)
