@@ -756,6 +756,7 @@ def create_figures(data, current_month=None):
                     "`year_opened` == @current_year and `month_opened` == @current_month - 1"
                 ).drop(columns=["average_days_active", "year_month_style"])
             )
+            st.write(products_of_interest)
 
             delta_vals = [
                 round((curr - prev) / prev * 100, 1)
