@@ -31,7 +31,7 @@ def load_data(file):
     return pd.read_excel(file)
 
 
-def create_figures(data, current_month=None):
+def create_figures(data, current_month=None, download_figs=False):
     # current_year = datetime.now().year
     if not current_month:
         current_month = datetime.now().month
@@ -44,6 +44,7 @@ def create_figures(data, current_month=None):
     # TODO: add a figure download setting, so that it significantly speeds up
     #   when figures aren't required to be downloaded, then check on when download time
     # TODO: @s don't work well in df.query()s for some reason, replace w f-strings if necessary (mem issue?)
+    # TODO: maybe can add a bunch of st.stop()s to act as pauses and to allow multiselect?
     tab1, tab3, tab4, tab2, tab5 = st.tabs(
         [
             "Tickets per Month",
@@ -212,7 +213,8 @@ def create_figures(data, current_month=None):
 
             sns.despine(bottom=True, left=True)
 
-            # plt.savefig("tickets_per_month.png", dpi=300, bbox_inches="tight")
+            if download_figs:
+                plt.savefig("tickets_per_month.png", dpi=300, bbox_inches="tight")
             st.pyplot(fig=fig)
 
         with col2:
@@ -380,7 +382,8 @@ def create_figures(data, current_month=None):
 
             sns.despine(bottom=True, left=True)
 
-            # plt.savefig("average_days_to_close.png", dpi=300, bbox_inches="tight")
+            if download_figs:
+                plt.savefig("average_days_to_close.png", dpi=300, bbox_inches="tight")
             st.pyplot(fig=fig)
 
         with col2:
@@ -522,7 +525,8 @@ def create_figures(data, current_month=None):
             ax.grid(color="k", linestyle="-", axis="y", alpha=0.1)
             sns.despine(bottom=True, left=True)
 
-            # plt.savefig("count_product_tickets.png", dpi=300, bbox_inches="tight")
+            if download_figs:
+                plt.savefig("count_product_tickets.png", dpi=300, bbox_inches="tight")
             st.pyplot(fig=fig)
         with col2:
             prev_mo_vals = [
@@ -627,7 +631,8 @@ def create_figures(data, current_month=None):
             ax.grid(color="k", linestyle="-", axis="y", alpha=0.1)
             sns.despine(bottom=True, left=True)
 
-            # plt.savefig("count_client_tickets.png", dpi=300, bbox_inches="tight")
+            if download_figs:
+                plt.savefig("count_client_tickets.png", dpi=300, bbox_inches="tight")
             st.pyplot(fig=fig)
 
         with col2:
@@ -726,7 +731,8 @@ def create_figures(data, current_month=None):
             ax.grid(color="k", linestyle="-", axis="y", alpha=0.1)
             sns.despine(bottom=True, left=True)
 
-            # plt.savefig("average_days_by_product.png", dpi=300, bbox_inches="tight")
+            if download_figs:
+                plt.savefig("average_days_by_product.png", dpi=300, bbox_inches="tight")
             st.pyplot(fig=fig)
 
         with col2:
@@ -761,26 +767,27 @@ def create_figures(data, current_month=None):
 
     # success_message = st.success("Done!", icon="✅")
 
-    figures = [
-        "tickets_per_month.png",
-        "average_days_to_close.png",
-        "count_product_tickets.png",
-        "count_client_tickets.png",
-        "average_days_by_product.png",
-    ]
+    if download_figs:
+        figures = [
+            "tickets_per_month.png",
+            "average_days_to_close.png",
+            "count_product_tickets.png",
+            "count_client_tickets.png",
+            "average_days_by_product.png",
+        ]
 
-    with zipfile.ZipFile("figures.zip", "w") as zipf:
-        for figure in figures:
-            zipf.write(figure)
+        with zipfile.ZipFile("figures.zip", "w") as zipf:
+            for figure in figures:
+                zipf.write(figure)
 
-    download_button.empty()
-    st.download_button(
-        label="Download All Figures",
-        data=open("figures.zip", "rb").read(),
-        # mime="application/octet-stream",
-        mime="application/zip",
-        file_name="figures.zip",
-    )
+        download_button.empty()
+        st.download_button(
+            label="Download All Figures",
+            data=open("figures.zip", "rb").read(),
+            # mime="application/octet-stream",
+            mime="application/zip",
+            file_name="figures.zip",
+        )
 
     # time.sleep(3)
     # upload_success.empty()
@@ -836,8 +843,18 @@ st.sidebar.write(f"{start_month}, {start_year} - {end_month}, {end_year}")
 
 st.sidebar.divider()
 
-st.sidebar.subheader("Select an option below to view an archived report")
-if st.sidebar.button(label="Run April 2023 Report"):
-    create_figures("coe_kpi_04_2023.xlsx", 5)
-if st.sidebar.button(label="Run May 2023 Report"):
-    create_figures("coe_kpi_05_2023.xlsx", 6)
+download_checkbox = st.sidebar.checkbox(
+    "Enable high-quality figure downloads (slows down load time)"
+)
+
+st.sidebar.divider()
+
+st.sidebar.subheader("Archived Reports:")
+if st.sidebar.button(label="April 2023 Report"):
+    create_figures(
+        data="coe_kpi_04_2023.xlsx", current_month=5, download_figs=download_checkbox
+    )
+if st.sidebar.button(label="May 2023 Report"):
+    create_figures(
+        data="coe_kpi_05_2023.xlsx", current_month=6, download_figs=download_checkbox
+    )
