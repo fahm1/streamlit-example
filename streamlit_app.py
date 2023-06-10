@@ -43,6 +43,7 @@ def create_figures(data, current_month=None):
     # TODO: fix image sizing due to sizing changes due to sidebar
     # TODO: add a figure download setting, so that it significantly speeds up
     #   when figures aren't required to be downloaded, then check on when download time
+    # TODO: @s don't work well in df.query()s for some reason, replace w f-strings if necessary (mem issue?)
     tab1, tab3, tab4, tab2, tab5 = st.tabs(
         [
             "Tickets per Month",
@@ -523,17 +524,17 @@ def create_figures(data, current_month=None):
 
             # plt.savefig("count_product_tickets.png", dpi=300, bbox_inches="tight")
             st.pyplot(fig=fig)
-
         with col2:
             prev_mo_vals = [
                 df5.query(
-                    "`year_opened` == @current_year and `month_opened` == @current_month - 2 and `product_type` == @i"
+                    f"`year_opened` == {current_year} and `month_opened` == {current_month - 2} and `product_type` == @i"
+                    # "`year_opened` == @current_year and `month_opened` == @current_month - 2 and `product_type` == @i"
                 )["count"].squeeze()
                 for i in products_of_interest
             ]
             curr_mo_vals = [
                 df5.query(
-                    "`year_opened` == @current_year and `month_opened` == @current_month - 1 and `product_type` == @i"
+                    f"`year_opened` == {current_year} and `month_opened` == {current_month - 1} and `product_type` == @i"
                 )["count"].squeeze()
                 for i in products_of_interest
             ]
@@ -632,14 +633,14 @@ def create_figures(data, current_month=None):
         with col2:
             prev_mo_vals = [
                 df7.query(
-                    "`year_opened` == @current_year and `month_opened` == @current_month - 2 and `client_name` == @i"
+                    f"`year_opened` == {current_year} and `month_opened` == {current_month - 2} and `client_name` == @i"
                 )["count"].squeeze()
                 for i in clients_of_interest
             ]
 
             curr_mo_vals = [
                 df7.query(
-                    "`year_opened` == @current_year and `month_opened` == @current_month - 1 and `client_name` == @i"
+                    f"`year_opened` == {current_year} and `month_opened` == {current_month - 1} and `client_name` == @i"
                 )["count"].squeeze()
                 for i in clients_of_interest
             ]
@@ -731,37 +732,17 @@ def create_figures(data, current_month=None):
         with col2:
             prev_mo_vals = [
                 df8.query(
-                    "`year_opened` == @current_year and `month_opened` == @current_month - 2 and `product_type` == @i"
+                    f"`year_opened` == {current_year} and `month_opened` == {current_month - 2} and `product_type` == @i"
                 )["rounded_days_active"].squeeze()
                 for i in products_of_interest
             ]
-            st.write(prev_mo_vals)
-            st.write(
-                f"`year_opened` == {current_year} and `month_opened` == {current_month - 2} and `product_type` == @i"
-            )
-            st.write(
-                f"`year_opened` == {current_year} and `month_opened` == {current_month - 1} and `product_type` == @i"
-            )
-            # curr_mo_vals = [
-            #     df8.query(
-            #         "`year_opened` == @current_year and `month_opened` == @current_month - 1 and `product_type` == @i"
-            #     )["rounded_days_active"].squeeze()
-            #     for i in products_of_interest
-            # ]
+
             curr_mo_vals = [
                 df8.query(
-                    "year_opened == @current_year and month_opened == @current_month - 1 and product_type == @i"
-                ).rounded_days_active
+                    f"`year_opened` == {current_year} and `month_opened` == {current_month - 1} and `product_type` == @i"
+                ).rounded_days_active.squeeze()
                 for i in products_of_interest
             ]
-            st.write(curr_mo_vals)
-            st.write(df8.drop(columns=["average_days_active", "year_month_style"]))
-            st.write(
-                df8.query(
-                    "`year_opened` == @current_year and `month_opened` == @current_month - 1"
-                ).drop(columns=["average_days_active", "year_month_style"])
-            )
-            st.write(products_of_interest)
 
             delta_vals = [
                 round((curr - prev) / prev * 100, 1)
@@ -800,12 +781,6 @@ def create_figures(data, current_month=None):
         mime="application/zip",
         file_name="figures.zip",
     )
-    # if download_button.button("Download All Figures", key=1234):
-    #     with open("figures.zip", "rb") as file:
-    #         download_link = f'<a href="data:application/zip;base64,{base64.b64encode(file.read()).decode()}" download="figures.zip">Click to download</a>'
-    #         download_button.markdown(download_link, unsafe_allow_html=True)
-
-    # st.balloons()
 
     # time.sleep(3)
     # upload_success.empty()
@@ -817,55 +792,16 @@ st.subheader("Input Excel file below")
 
 uploaded_file = st.file_uploader(label="hidden label", label_visibility="collapsed")
 
-current_year = datetime.now().year
-current_month = datetime.now().month
 
 if uploaded_file:
+    current_year = datetime.now().year
+    current_month = datetime.now().month
+
     upload_success = st.success(
         f"{uploaded_file.name} has been successfully uploaded!",
         icon="✅",
     )
     create_figures(uploaded_file)
-
-# with st.sidebar:
-# st.subheader("Configure Start Date")
-# start_month = st.selectbox(
-#     label="Starting Month",
-#     options=([calendar.month_name[i] for i in range(1, 13)]),
-#     index=0,
-#     help="Please select a starting month for the figures.",
-# )
-# start_year = st.selectbox(
-#     label="Starting Year",
-#     options=([current_year - i for i in range(0, 10)]),
-#     index=1,
-#     help="Please select a starting year for the figures.",
-# )
-# st.subheader("Configure End Date")
-# end_month = st.selectbox(
-#     label="Ending Month",
-#     options=([calendar.month_name[i] for i in range(1, 13)]),
-#     index=current_month - 1,
-#     help="Please select an ending month for the figures.",
-# )
-# end_year = st.selectbox(
-#     label="Ending Year",
-#     options=([current_year - i for i in range(0, 10)]),
-#     index=0,
-#     help="Please select an ending year for the figures.",
-# )
-# # start_button = st.button(label="Click to re-run the report")
-
-# st.write(f"Selected Range:")
-# st.write(f"{start_month}, {start_year} - {end_month}, {end_year}")
-
-# st.divider()
-
-# st.subheader("Select to an archived report")
-# if st.button(label="Run April 2023 Report"):
-#     create_figures("coe_kpi_04_2023.xlsx")
-# if st.button(label="Run May 2023 Report"):
-#     create_figures("coe_kpi_05_2023.xlsx")
 
 
 st.sidebar.subheader("Configure Start Date")
@@ -902,7 +838,7 @@ st.sidebar.write(f"{start_month}, {start_year} - {end_month}, {end_year}")
 st.sidebar.divider()
 
 st.sidebar.subheader("Select an option below to view an archived report")
-if st.sidebar.button(label="Run April 2023 Report (NOT CURRENTLY WORKING)"):
+if st.sidebar.button(label="Run April 2023 Report"):
     create_figures("coe_kpi_04_2023.xlsx", 5)
 if st.sidebar.button(label="Run May 2023 Report"):
     create_figures("coe_kpi_05_2023.xlsx", 6)
