@@ -444,13 +444,6 @@ def create_figures(data, current_month=None):
 
     progress_bar.progress(40, text=progress_text)
 
-    # products_of_interest = list(
-    #     df.product_type.value_counts(dropna=True)[:6].reset_index().product_type
-    # )
-    # if "Other" in products_of_interest:
-    #     products_of_interest.remove("Other")
-    #     products_of_interest.append("Other")
-
     # also consider start date here
     products_of_interest = list(
         df.query("year_opened >= 2022 and product_type.notnull()")
@@ -749,10 +742,16 @@ def create_figures(data, current_month=None):
             st.write(
                 f"`year_opened` == {current_year} and `month_opened` == {current_month - 1} and `product_type` == @i"
             )
+            # curr_mo_vals = [
+            #     df8.query(
+            #         "`year_opened` == @current_year and `month_opened` == @current_month - 1 and `product_type` == @i"
+            #     )["rounded_days_active"].squeeze()
+            #     for i in products_of_interest
+            # ]
             curr_mo_vals = [
                 df8.query(
-                    "`year_opened` == @current_year and `month_opened` == @current_month - 1 and `product_type` == @i"
-                )["rounded_days_active"].squeeze()
+                    "year_opened == @current_year and month_opened == @current_month - 1 and product_type == @i"
+                ).rounded_days_active
                 for i in products_of_interest
             ]
             st.write(curr_mo_vals)
