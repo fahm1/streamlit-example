@@ -54,6 +54,7 @@ def create_figures(data, current_month=None, download_figs=False):
     # TODO: @s don't work well in df.query()s for some reason, replace w f-strings if necessary (mem issue?)
     # TODO: maybe can add a bunch of st.stop()s to act as pauses and to allow multiselect?
     # TODO: maybe move the download all under the check?
+    # TODO: make literally everything MD lol so that it doesn't reset stuff
     tab1, tab3, tab4, tab2, tab5 = st.tabs(
         [
             "Tickets per Month",
@@ -232,30 +233,39 @@ def create_figures(data, current_month=None, download_figs=False):
                 plt.savefig("tickets_per_month.png", dpi=300, bbox_inches="tight")
                 download_tab_1_button.empty()
                 download_file_path = "tickets_per_month.png"
-                st.markdown(
-                    f"""
+                css = """
                     <style>
-                    .download-button {{
+                    .download-button {
                         text-decoration: none;
                         padding: 6px 12px;
                         background-color: transparent;
-                        color: white;
+                        color: white !important;
                         border-radius: 4px;
-                        border: 2px solid #D3D3D3;
+                        border: 1px solid #D3D3D3;
                         cursor: pointer;
                         display: inline-block;
-                        transition: background-color 0.1s, border-color 0.3s, color 0.1s;
-                    }}
-                    .download-button:hover {{
+                        transition: background-color 0s, border-color 0s, color 0s;
+                    }
+                    .download-button:hover {
                         border-color: red;
-                        color: red;
-                    }}
+                        color: red !important;
+                        text-decoration: none;
+                    }
+                    .download-button:active {
+                        text-decoration: none;
+                    }
                     </style>
-                    
-                    <a href="data:application/octet-stream;base64,{get_base64_encoded_file(download_file_path)}" download="tickets_per_month.png" class="download-button">Download This Figure</a>
-                    """,
-                    unsafe_allow_html=True,
-                )
+                    """
+
+                # Create a download link with the specified CSS style
+                download_link = f"""
+                                <a href="data:application/octet-stream;base64,{get_base64_encoded_file(download_file_path)}" download="tickets_per_month.png" class="download-button">Download This Figure</a>
+                                """
+                st.markdown(css + download_link, unsafe_allow_html=True)
+            # st.markdown(
+            #     '<a href="your_download_link" class="download-button">Download This Figure</a>',
+            #     unsafe_allow_html=True,
+            # )
 
         with col2:
             value = df_monthly_grouped.query(
@@ -877,23 +887,6 @@ def create_figures(data, current_month=None, download_figs=False):
                 download_file_path = "average_days_by_product.png"
                 st.markdown(
                     f"""
-                    <style>
-                    .download-button {{
-                        text-decoration: none;
-                        padding: 6px 12px;
-                        background-color: transparent;
-                        color: white;
-                        border-radius: 4px;
-                        border: 2px solid #D3D3D3;
-                        cursor: pointer;
-                        display: inline-block;
-                        transition: background-color 0.3s, border-color 0.1s, color 0.1s;
-                    }}
-                    .download-button:hover {{
-                        border-color: red;
-                        color: red;
-                    }}
-                    </style>
                     
                     <a href="data:application/octet-stream;base64,{get_base64_encoded_file(download_file_path)}" download="average_days_by_product.png" class="download-button">Download This Figure</a>
                     """,
@@ -1009,6 +1002,7 @@ st.sidebar.divider()
 download_checkbox = st.sidebar.checkbox(
     "Enable high-quality figure downloads (slows down load time)"
 )
+download_all_button = st.markdown("Download All Figures")
 
 st.sidebar.divider()
 
