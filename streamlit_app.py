@@ -32,7 +32,7 @@ def load_data(file):
 
 
 def create_figures(data, current_month=None):
-    current_year = datetime.now().year
+    # current_year = datetime.now().year
     if not current_month:
         current_month = datetime.now().month
 
@@ -792,11 +792,10 @@ st.subheader("Input Excel file below")
 
 uploaded_file = st.file_uploader(label="hidden label", label_visibility="collapsed")
 
+current_year = datetime.now().year
+current_month = datetime.now().month
 
 if uploaded_file:
-    current_year = datetime.now().year
-    current_month = datetime.now().month
-
     upload_success = st.success(
         f"{uploaded_file.name} has been successfully uploaded!",
         icon="✅",
