@@ -750,11 +750,11 @@ def create_figures(data, current_month=None):
                 for i in products_of_interest
             ]
             st.write(curr_mo_vals)
-            st.write(df8)
+            st.write(df8.drop(columns=["average_days_active", "year_month_style"]))
             st.write(
                 df8.query(
                     "`year_opened` == @current_year and `month_opened` == @current_month - 1"
-                )
+                ).drop(columns=["average_days_active", "year_month_style"])
             )
 
             delta_vals = [
