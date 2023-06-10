@@ -215,6 +215,13 @@ def create_figures(data, current_month=None, download_figs=False):
 
             if download_figs:
                 plt.savefig("tickets_per_month.png", dpi=300, bbox_inches="tight")
+                st.download_button(
+                    label="Download This Figure",
+                    data=open("tickets_per_month.png", "rb"),
+                    mime="application/octet-stream",
+                    file_name="tickets_per_month.png",
+                )
+
             st.pyplot(fig=fig)
 
         with col2:
