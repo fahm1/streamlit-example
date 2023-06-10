@@ -233,39 +233,33 @@ def create_figures(data, current_month=None, download_figs=False):
                 plt.savefig("tickets_per_month.png", dpi=300, bbox_inches="tight")
                 download_tab_1_button.empty()
                 download_file_path = "tickets_per_month.png"
-                css = """
+                css = f"""
                     <style>
-                    .download-button {
+                    .download-button {{
                         text-decoration: none;
                         padding: 6px 12px;
                         background-color: transparent;
                         color: white !important;
                         border-radius: 4px;
-                        border: 1px solid #D3D3D3;
+                        border: 0.5px solid #D3D3D3 !important;
                         cursor: pointer;
                         display: inline-block;
                         transition: background-color 0s, border-color 0s, color 0s;
-                    }
-                    .download-button:hover {
-                        border-color: red;
+                    }}
+                    .download-button:hover {{
+                        border-color: red !important;
                         color: red !important;
                         text-decoration: none;
-                    }
-                    .download-button:active {
+                    }}
+                    .download-button:active {{
                         text-decoration: none;
-                    }
+                    }}
                     </style>
+                    
+                    <a href="data:application/octet-stream;base64,{get_base64_encoded_file(download_file_path)}" download="tickets_per_month.png" class="download-button">Download This Figure</a>
                     """
-
-                # Create a download link with the specified CSS style
-                download_link = f"""
-                                <a href="data:application/octet-stream;base64,{get_base64_encoded_file(download_file_path)}" download="tickets_per_month.png" class="download-button">Download This Figure</a>
-                                """
-                st.markdown(css + download_link, unsafe_allow_html=True)
-            # st.markdown(
-            #     '<a href="your_download_link" class="download-button">Download This Figure</a>',
-            #     unsafe_allow_html=True,
-            # )
+                # TODO: can prolly remove css from other buttons, not sure why but it works
+                st.markdown(css, unsafe_allow_html=True)
 
         with col2:
             value = df_monthly_grouped.query(
@@ -887,7 +881,6 @@ def create_figures(data, current_month=None, download_figs=False):
                 download_file_path = "average_days_by_product.png"
                 st.markdown(
                     f"""
-                    
                     <a href="data:application/octet-stream;base64,{get_base64_encoded_file(download_file_path)}" download="average_days_by_product.png" class="download-button">Download This Figure</a>
                     """,
                     unsafe_allow_html=True,
@@ -939,24 +932,17 @@ def create_figures(data, current_month=None, download_figs=False):
                 zipf.write(figure)
 
         download_button.empty()
-        # st.download_button(
-        #     label="Download All Figures",
-        #     data=open("figures.zip", "rb").read(),
-        #     # mime="application/octet-stream",
-        #     mime="application/zip",
-        #     file_name="figures.zip",
-        # )
         st.markdown(
             f"""
         <a href="data:application/zip;base64,{get_base64_encoded_file("figures.zip")}" download="figures.zip" class="download-button">Download All Figures</a>
         """,
             unsafe_allow_html=True,
         )
+        download_all_button.empty().markdown("hi:)")
 
-    # time.sleep(3)
-    # upload_success.empty()
     progress_bar.empty()
-    # success_message.empty()
+
+    return
 
 
 st.subheader("Input Excel file below")
@@ -992,7 +978,7 @@ end_year = st.sidebar.selectbox(
     index=0,
     help="Please select an ending year for the figures.",
 )
-# start_button = st.button(label="Click to re-run the report")
+# start_button = st.button(label="Click to re-run the report") -- gotta do w md
 
 st.sidebar.write(f"Selected Range:")
 st.sidebar.write(f"{start_month}, {start_year} - {end_month}, {end_year}")
@@ -1002,7 +988,13 @@ st.sidebar.divider()
 download_checkbox = st.sidebar.checkbox(
     "Enable high-quality figure downloads (slows down load time)"
 )
-download_all_button = st.markdown("Download All Figures")
+# TODO: can do this with a container
+download_all_button = st.sidebar.button(
+    "Download All Figures",
+    disabled=True,
+    key="all_fig_download",
+    use_container_width=True,
+)
 
 st.sidebar.divider()
 
