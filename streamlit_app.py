@@ -453,7 +453,7 @@ def create_figures(data, current_month=None):
 
     # also consider start date here
     products_of_interest = list(
-        df8.query("year_opened >= 2022 and product_type.notnull()")
+        df.query("year_opened >= 2022 and product_type.notnull()")
         .product_type.value_counts(dropna=True)[:6]
         .reset_index()
         .product_type
