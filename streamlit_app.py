@@ -48,13 +48,11 @@ def create_figures(data, current_month=None, download_figs=False):
     progress_bar = st.progress(0, progress_text)
 
     # TODO: move and rename tabs instead of messing around like below
-    # TODO: fix image sizing due to sizing changes due to sidebar
-    # TODO: add a figure download setting, so that it significantly speeds up
-    #   when figures aren't required to be downloaded, then check on when download time
     # TODO: @s don't work well in df.query()s for some reason, replace w f-strings if necessary (mem issue?)
-    # TODO: maybe can add a bunch of st.stop()s to act as pauses and to allow multiselect?
-    # TODO: maybe move the download all under the check?
     # TODO: make literally everything MD lol so that it doesn't reset stuff
+    # TODO: make a 'reset_date' button so that date can be restored to normal if messed around with a bit too much
+    # have to consider that charts are different dates, so actually 'reset' would just make the appearance
+    # the same as the start, but the charts would also be the same as the start, ie. not following the appearnce
     tab1, tab3, tab4, tab2, tab5 = st.tabs(
         [
             "Tickets per Month",
@@ -1009,7 +1007,7 @@ start_year = st.sidebar.selectbox(
     index=1,
     help="Please select a starting year for the figures.",
 )
-st.sidebar.subheader("Configure End Date")
+st.sidebar.subheader("Configure End Date :red[NOT ACTIVE YET]")
 end_month = st.sidebar.selectbox(
     label="Ending Month",
     options=([calendar.month_name[i] for i in range(1, 13)]),
