@@ -64,11 +64,34 @@ def create_figures(data, current_month=None, download_figs=False):
             "Average Days to Close Tickets by Product",
         ]
     )
-    download_button = st.empty()
-    download_button.button("Download All Figures", disabled=True)
-    # placeholder = st.empty().download_button(
-    #     label="Download All Figures", disabled=True, data="placeholder"
-    # )
+    if download_figs:
+        temp_download_all_button = download_section.markdown(
+            f"""
+        <style>
+        .temp-download-all-button {{
+            text-decoration: none !important;
+            padding: 6px 12px;
+            background-color: transparent;
+            color: white !important;
+            border-radius: 4px;
+            border: 2px solid #D3D3D3;
+            cursor: not-allowed;
+            display: inline-block;
+            transition: background-color 0s, border-color 0s, color 0s;
+            width: 100%;
+            box-sizing: border-box;
+            text-align: center;
+        }}
+        .temp-download-all-button:hover {{
+            text-decoration: none !important;
+            border-color: red;
+            color: red !important;
+        }}
+        </style>
+        <div class="temp-download-all-button">Please wait...</div>
+        """,
+            unsafe_allow_html=True,
+        )
 
     df = load_data(data)
 
@@ -931,33 +954,54 @@ def create_figures(data, current_month=None, download_figs=False):
             for figure in figures:
                 zipf.write(figure)
 
-        download_button.empty()
-        st.markdown(
+        download_section.markdown(
             f"""
-        <a href="data:application/zip;base64,{get_base64_encoded_file("figures.zip")}" download="figures.zip" class="download-button">Download All Figures</a>
+        <style>
+        .download-all-button {{
+            text-decoration: none !important;
+            padding: 6px 12px;
+            background-color: transparent;
+            color: white !important;
+            border-radius: 4px;
+            border: 2px solid #D3D3D3;
+            cursor: pointer;
+            display: inline-block;
+            transition: background-color 0s, border-color 0s, color 0s;
+            width: 100%;
+            box-sizing: border-box;
+            text-align: center;
+        }}
+        .download-all-button:hover {{
+            text-decoration: none !important;
+            border-color: red;
+            color: red !important;
+        }}
+        </style>
+        <a href="data:application/zip;base64,{get_base64_encoded_file("figures.zip")}" download="figures.zip" class="download-all-button">Download All Figures</a>
         """,
             unsafe_allow_html=True,
         )
-        download_all_button.empty().markdown("hi:)")
+        temp_download_all_button.empty()
 
     progress_bar.empty()
 
     return
 
 
-st.subheader("Input Excel file below")
+st.subheader("Input Excel file below or select an archived report from the sidebar")
 
 uploaded_file = st.file_uploader(label="hidden label", label_visibility="collapsed")
 
 current_year = datetime.now().year
 current_month = datetime.now().month
 
-st.sidebar.subheader("Configure Start Date")
+st.sidebar.subheader("Configure Start Date :red[NOT ACTIVE YET]")
+
 start_month = st.sidebar.selectbox(
     label="Starting Month",
     options=([calendar.month_name[i] for i in range(1, 13)]),
     index=0,
-    help="Please select a starting month for the figures.",
+    help="Please select a starting month for the figures. ",
 )
 start_year = st.sidebar.selectbox(
     label="Starting Year",
@@ -978,23 +1022,23 @@ end_year = st.sidebar.selectbox(
     index=0,
     help="Please select an ending year for the figures.",
 )
-# start_button = st.button(label="Click to re-run the report") -- gotta do w md
 
 st.sidebar.write(f"Selected Range:")
 st.sidebar.write(f"{start_month}, {start_year} - {end_month}, {end_year}")
 
 st.sidebar.divider()
 
-download_checkbox = st.sidebar.checkbox(
-    "Enable high-quality figure downloads (slows down load time)"
+st.sidebar.subheader("Figure Downloads:")
+download_section = st.sidebar.container()
+download_checkbox = download_section.checkbox(
+    "Enable figure downloads (slows down load time)"
 )
-# TODO: can do this with a container
-download_all_button = st.sidebar.button(
-    "Download All Figures",
-    disabled=True,
-    key="all_fig_download",
-    use_container_width=True,
-)
+# download_all_button = download_section.button(
+#     "Download All Figure",
+#     disabled=True,
+#     key="all_fig_download",
+#     use_container_width=True,
+# )
 
 st.sidebar.divider()
 
@@ -1015,4 +1059,7 @@ if uploaded_file:
         f"{uploaded_file.name} has been successfully uploaded!",
         icon="✅",
     )
-    create_figures(data=uploaded_file, download_figs=download_checkbox)
+    create_figures(
+        data=uploaded_file,
+        download_figs=download_checkbox,
+    )
