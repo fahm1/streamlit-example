@@ -6,3 +6,4 @@ seaborn
 numpy
 requests
 openpyxl
+altair
