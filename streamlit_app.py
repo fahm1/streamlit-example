@@ -1100,6 +1100,7 @@ def create_figures(
 st.subheader("Input Excel file below or select an archived report from the sidebar")
 
 uploaded_file = st.file_uploader(label="hidden label", label_visibility="collapsed")
+file_removed = False
 
 current_year = datetime.now().year
 current_month = datetime.now().month
@@ -1166,6 +1167,7 @@ if st.sidebar.button(label="April 2023", use_container_width=True):
     create_figures(
         data="coe_kpi_04_2023.xlsx", current_month=5, download_figs=download_checkbox
     )
+    file_removed = True
 if st.sidebar.button(label="May 2023", use_container_width=True):
     create_figures(
         data="coe_kpi_05_2023.xlsx",
@@ -1177,8 +1179,9 @@ if st.sidebar.button(label="May 2023", use_container_width=True):
         # end_month=end_month,
         # end_year=end_year,
     )
+    file_removed = True
 
-if uploaded_file:
+if uploaded_file and not file_removed:
     # will only work for current month
     # for example, in june, can run the report with all of may data, but can't run a report with no may data
     upload_success = st.success(
