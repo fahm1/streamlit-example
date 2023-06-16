@@ -6,6 +6,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 import streamlit as st
+import altair as alt
+import altair_viewer
 import zipfile
 import base64
 
@@ -39,20 +41,55 @@ def load_data(file):
     return pd.read_excel(file)
 
 
-def create_figures(data, current_month=None, download_figs=False):
-    # current_year = datetime.now().year
+def create_figures(
+    data,
+    current_month=None,
+    download_figs=False,
+    interactive_charts=False
+    # start_month=None,
+    # start_year=None,
+    # end_month=None,
+    # end_year=None,
+):
     if not current_month:
         current_month = datetime.now().month
+
+    interactive_charts = False
+
+    custom_date = False
+
+    # if (
+    #     start_month != "January"
+    #     or start_year != 2022
+    #     or end_month != "June"
+    #     or end_year != 2023
+    # ):
+    #     custom_date = True
+    #     primary_year = start_year
+    #     primary_month = start_month
+    #     current_year = end_year
+    #     current_month = datetime.strptime(end_month, "%B").month
+    #     # current_month = end_month
+    #     secondary_year_month = f"{current_year}-{current_month}"
+
+    if not custom_date:
+        current_year = 2023
+        primary_year = current_year - 4
+        primary_month = 1
+        secondary_year_month = "2022-1"
 
     progress_text = "Loading..."
     progress_bar = st.progress(0, progress_text)
 
+    # TODO: A LOT
     # TODO: move and rename tabs instead of messing around like below
     # TODO: @s don't work well in df.query()s for some reason, replace w f-strings if necessary (mem issue?)
     # TODO: make literally everything MD lol so that it doesn't reset stuff
     # TODO: make a 'reset_date' button so that date can be restored to normal if messed around with a bit too much
     # have to consider that charts are different dates, so actually 'reset' would just make the appearance
     # the same as the start, but the charts would also be the same as the start, ie. not following the appearnce
+    # note: primary = tab1 and tab 2
+    #   secondary = tab3, tab4, and tab5
     tab1, tab3, tab4, tab2, tab5 = st.tabs(
         [
             "Tickets per Month",
@@ -155,11 +192,86 @@ def create_figures(data, current_month=None, download_figs=False):
         col1, col2 = st.columns([0.8, 0.2], gap="small")
 
         with col1:
+            # st.write(f"end_month: {end_month}")
+            # st.write(start_month, start_year, end_month, end_year)
+            # st.write(primary_month, primary_year)
+            # st.write(f"curr_month:{current_month} ")
+            # st.write(f"curr_year: {current_year}")
             # Fig 1: Tickets per month
+            if interactive_charts:
+                custom_palette2 = [
+                    "#264653",
+                    "#2A9D8F",
+                    "#E9C46A",
+                    "#F4A261",
+                    "#E76F51",
+                ]
+
+                source = df_monthly_grouped.query(
+                    f"(year_opened >= ({primary_year}) & year_opened < {current_year}) | (year_opened == {current_year} & month_opened < {current_month})"
+                )
+
+                base = alt.Chart(source).properties(height=600)
+
+                highlight = alt.selection(
+                    type="single",
+                    on="mouseover",
+                    fields=["month_opened"],
+                    nearest=True,
+                )
+
+                tooltip = [
+                    alt.Tooltip("month_opened:O", title="Month of Year"),
+                    alt.Tooltip("ticket_count:Q", title="Tickets Opened"),
+                    alt.Tooltip("year_opened:N", title="Year"),
+                ]
+
+                color = alt.Color(
+                    "year_opened:N",
+                    legend=alt.Legend(title="Year", titleFontSize=20, labelFontSize=16),
+                    scale=alt.Scale(range=custom_palette2),
+                )
+
+                points = (
+                    base.mark_circle()
+                    .encode(opacity=alt.value(0))
+                    .add_selection(highlight)
+                )
+
+                line = base.mark_line(strokeWidth=4).encode(
+                    x=alt.X(
+                        "month_opened:O",
+                        title="Month of Year",
+                        axis=alt.Axis(
+                            values=list(range(1, 13)),
+                            tickCount=12,
+                            labelExpr="datum.value === 1 ? 'January' : datum.value === 2 ? 'February' : datum.value === 3 ? 'March' : datum.value === 4 ? 'April' : datum.value === 5 ? 'May' : datum.value === 6 ? 'June' : datum.value === 7 ? 'July' : datum.value === 8 ? 'August' : datum.value === 9 ? 'September' : datum.value === 10 ? 'October' : datum.value === 11 ? 'November' : 'December'",
+                            labelAngle=315,
+                            titlePadding=20,
+                        ),
+                    ),
+                    y=alt.Y("ticket_count", title="Tickets Opened"),
+                    color=color,
+                    opacity=alt.condition(highlight, alt.value(1), alt.value(0.2)),
+                    tooltip=tooltip,
+                )
+
+                chart = (
+                    (points + line)
+                    .configure_axis(
+                        titleFontSize=20,
+                        labelFontSize=16,
+                    )
+                    .interactive()
+                )
+
+                st.altair_chart(chart, use_container_width=True)
+
+            # if not interactive_charts:
             fig, ax = plt.subplots(figsize=(13.6, 7))
 
             bplot = sns.barplot(
-                data=df_monthly_grouped.query("year_opened >= @current_year - 4"),
+                data=df_monthly_grouped.query(f"year_opened >= {primary_year}"),
                 x="month_opened",
                 y="ticket_count",
                 hue="year_opened",
@@ -186,7 +298,7 @@ def create_figures(data, current_month=None, download_figs=False):
 
             lplot = sns.lineplot(
                 data=df_monthly_grouped.query(
-                    "(year_opened >= (@current_year - 4) & year_opened < @current_year) | (year_opened == @current_year & month_opened < @current_month)"
+                    f"(year_opened >= ({primary_year}) & year_opened < {current_year}) | (year_opened == {current_year} & month_opened < {current_month})"
                 ),
                 x="month_opened",
                 y="ticket_count",
@@ -244,7 +356,9 @@ def create_figures(data, current_month=None, download_figs=False):
 
             sns.despine(bottom=True, left=True)
 
-            st.pyplot(fig=fig)
+            if not interactive_charts:
+                st.pyplot(fig=fig)
+
             download_tab_1_button = st.empty()
             download_tab_1_button.button(
                 "Download This Figure", disabled=True, key="tab1_download"
@@ -937,8 +1051,6 @@ def create_figures(data, current_month=None, download_figs=False):
 
     progress_bar.progress(100, text=progress_text)
 
-    # success_message = st.success("Done!", icon="✅")
-
     if download_figs:
         figures = [
             "tickets_per_month.png",
@@ -993,6 +1105,21 @@ uploaded_file = st.file_uploader(label="hidden label", label_visibility="collaps
 current_year = datetime.now().year
 current_month = datetime.now().month
 
+
+# st.sidebar.divider()
+
+# st.sidebar.subheader("Custom Date Configuration:")
+# st.sidebar.subheader(":blue[in testing...]")
+
+# st.sidebar.divider()
+
+
+# st.sidebar.subheader("Interactive Charts:")
+# interactive_charts_check = st.sidebar.checkbox(
+#     "Enable Interactive Charts",
+#     help="Check to enable interactive charts. Does not support downloading of interactive charts, will instead download static charts if download is enabled.",
+# )
+
 st.sidebar.subheader("Configure Start Date :red[NOT ACTIVE YET]")
 
 start_month = st.sidebar.selectbox(
@@ -1029,25 +1156,27 @@ st.sidebar.divider()
 st.sidebar.subheader("Figure Downloads:")
 download_section = st.sidebar.container()
 download_checkbox = download_section.checkbox(
-    "Enable figure downloads (slows down load time)"
+    "Enable Figure Downloads",
+    help="Check to enable figure downloads. Slows down load time if enabled. Will enable both individual figure downloads as well as downloading all figures at once.",
 )
-# download_all_button = download_section.button(
-#     "Download All Figure",
-#     disabled=True,
-#     key="all_fig_download",
-#     use_container_width=True,
-# )
 
 st.sidebar.divider()
 
 st.sidebar.subheader("Archived Reports:")
-if st.sidebar.button(label="April 2023 Report"):
+if st.sidebar.button(label="April 2023", use_container_width=True):
     create_figures(
         data="coe_kpi_04_2023.xlsx", current_month=5, download_figs=download_checkbox
     )
-if st.sidebar.button(label="May 2023 Report"):
+if st.sidebar.button(label="May 2023", use_container_width=True):
     create_figures(
-        data="coe_kpi_05_2023.xlsx", current_month=6, download_figs=download_checkbox
+        data="coe_kpi_05_2023.xlsx",
+        current_month=6,
+        download_figs=download_checkbox,
+        # interactive_charts=interactive_charts_check
+        # start_month=start_month,
+        # start_year=start_year,
+        # end_month=end_month,
+        # end_year=end_year,
     )
 
 if uploaded_file:

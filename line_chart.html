@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    .error {
+        color: red;
+    }
+  </style>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm//vega@5"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm//vega-lite@4.17.0"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm//vega-embed@6"></script>
+</head>
+<body>
+  <div id="vis"></div>
+  <script>
+    (function(vegaEmbed) {
+      var spec = {"config": {"view": {"continuousWidth": 400, "continuousHeight": 300}}, "data": {"name": "data-c6cf291de05b51fc02905fffc81d3335"}, "mark": "line", "encoding": {"color": {"field": "year_opened", "legend": {"title": "Year"}, "scale": {"domain": ["2019", "2020", "2021", "2022", "2023"], "range": ["#2494c0", "#f7a82e", "#e64848", "#6e90a1", "#5e998d"]}, "type": "nominal"}, "tooltip": [{"field": "month_opened", "type": "quantitative"}, {"field": "ticket_count", "type": "quantitative"}, {"field": "year_opened", "type": "quantitative"}], "x": {"field": "month_opened", "title": "Month of Year", "type": "quantitative"}, "y": {"field": "ticket_count", "title": "Tickets Opened", "type": "quantitative"}}, "height": 600, "title": "Number of Zendesk Tickets Opened per Month 2019 - 2023", "$schema": "https://vega.github.io/schema/vega-lite/v4.17.0.json", "datasets": {"data-c6cf291de05b51fc02905fffc81d3335": [{"year_opened": 2019, "month_opened": 1, "ticket_count": 80}, {"year_opened": 2019, "month_opened": 2, "ticket_count": 43}, {"year_opened": 2019, "month_opened": 3, "ticket_count": 27}, {"year_opened": 2019, "month_opened": 4, "ticket_count": 66}, {"year_opened": 2019, "month_opened": 5, "ticket_count": 63}, {"year_opened": 2019, "month_opened": 6, "ticket_count": 53}, {"year_opened": 2019, "month_opened": 7, "ticket_count": 67}, {"year_opened": 2019, "month_opened": 8, "ticket_count": 135}, {"year_opened": 2019, "month_opened": 9, "ticket_count": 97}, {"year_opened": 2019, "month_opened": 10, "ticket_count": 127}, {"year_opened": 2019, "month_opened": 11, "ticket_count": 103}, {"year_opened": 2019, "month_opened": 12, "ticket_count": 100}, {"year_opened": 2020, "month_opened": 1, "ticket_count": 161}, {"year_opened": 2020, "month_opened": 2, "ticket_count": 139}, {"year_opened": 2020, "month_opened": 3, "ticket_count": 105}, {"year_opened": 2020, "month_opened": 4, "ticket_count": 73}, {"year_opened": 2020, "month_opened": 5, "ticket_count": 139}, {"year_opened": 2020, "month_opened": 6, "ticket_count": 196}, {"year_opened": 2020, "month_opened": 7, "ticket_count": 165}, {"year_opened": 2020, "month_opened": 8, "ticket_count": 131}, {"year_opened": 2020, "month_opened": 9, "ticket_count": 169}, {"year_opened": 2020, "month_opened": 10, "ticket_count": 167}, {"year_opened": 2020, "month_opened": 11, "ticket_count": 118}, {"year_opened": 2020, "month_opened": 12, "ticket_count": 128}, {"year_opened": 2021, "month_opened": 1, "ticket_count": 139}, {"year_opened": 2021, "month_opened": 2, "ticket_count": 143}, {"year_opened": 2021, "month_opened": 3, "ticket_count": 183}, {"year_opened": 2021, "month_opened": 4, "ticket_count": 150}, {"year_opened": 2021, "month_opened": 5, "ticket_count": 193}, {"year_opened": 2021, "month_opened": 6, "ticket_count": 150}, {"year_opened": 2021, "month_opened": 7, "ticket_count": 152}, {"year_opened": 2021, "month_opened": 8, "ticket_count": 153}, {"year_opened": 2021, "month_opened": 9, "ticket_count": 194}, {"year_opened": 2021, "month_opened": 10, "ticket_count": 182}, {"year_opened": 2021, "month_opened": 11, "ticket_count": 143}, {"year_opened": 2021, "month_opened": 12, "ticket_count": 168}, {"year_opened": 2022, "month_opened": 1, "ticket_count": 210}, {"year_opened": 2022, "month_opened": 2, "ticket_count": 261}, {"year_opened": 2022, "month_opened": 3, "ticket_count": 385}, {"year_opened": 2022, "month_opened": 4, "ticket_count": 302}, {"year_opened": 2022, "month_opened": 5, "ticket_count": 322}, {"year_opened": 2022, "month_opened": 6, "ticket_count": 414}, {"year_opened": 2022, "month_opened": 7, "ticket_count": 328}, {"year_opened": 2022, "month_opened": 8, "ticket_count": 416}, {"year_opened": 2022, "month_opened": 9, "ticket_count": 432}, {"year_opened": 2022, "month_opened": 10, "ticket_count": 508}, {"year_opened": 2022, "month_opened": 11, "ticket_count": 594}, {"year_opened": 2022, "month_opened": 12, "ticket_count": 549}, {"year_opened": 2023, "month_opened": 1, "ticket_count": 798}, {"year_opened": 2023, "month_opened": 2, "ticket_count": 652}, {"year_opened": 2023, "month_opened": 3, "ticket_count": 629}, {"year_opened": 2023, "month_opened": 4, "ticket_count": 497}, {"year_opened": 2023, "month_opened": 5, "ticket_count": 807}]}};
+      var embedOpt = {"mode": "vega-lite"};
+
+      function showError(el, error){
+          el.innerHTML = ('<div class="error" style="color:red;">'
+                          + '<p>JavaScript Error: ' + error.message + '</p>'
+                          + "<p>This usually means there's a typo in your chart specification. "
+                          + "See the javascript console for the full traceback.</p>"
+                          + '</div>');
+          throw error;
+      }
+      const el = document.getElementById('vis');
+      vegaEmbed("#vis", spec, embedOpt)
+        .catch(error => showError(el, error));
+    })(vegaEmbed);
+
+  </script>
+</body>
+</html>
